@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="demo1" extends="struts-default" namespace="/actions">
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="signOut" type="dispatcher">/end/login/login.jsp</result>
+		</action>
+		<action name="project_*" class="projectAction" method="{1}"></action>
+		<action name="point_*" class="pointAction" method="{1}"></action>
+		<action name="worksiteRecord_*" class="worksiteRecordAction" method="{1}"></action>
+		<action name="proRole_*" class="proRoleAction" method="{1}"></action>
+		<action name="userPro_*" class="userProAction" method="{1}"></action>
+		<action name="pointProblem_*" class="pointProblemAction" method="{1}"></action>
+		<action name="pointAnswer_*" class="pointAnswerAction" method="{1}"></action>
+	</package>
+	
+	<constant name="struts.custom.i18n.resources" value="Mess"></constant>  
+</struts>
+

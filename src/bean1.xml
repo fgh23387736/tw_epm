@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- 开启注解扫描 
+		(1)到包里面扫描类、方法、属性上面是否有注解
+	-->
+	<context:component-scan base-package="com.epm.gdsa"></context:component-scan>
+	
+	<!-- 配置c3p0连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- 注入属性值 -->
+		
+		<!--Mysql-->
+		<!--<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql:///testssh"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="root"></property>-->
+		
+		<!--Oracle-->
+		
+		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:orcl"></property>
+		<property name="user" value="system"></property>
+		<property name="password" value="FHLpwd0521"></property>
+		<!--
+		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@47.94.192.188:1521:orcl"></property>
+		<property name="user" value="worker"></property>
+		<property name="password" value="gdsaepms"></property>
+		-->
+	</bean>
+	
+	<!-- sessionFactory创建交给spring管理 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 因为在hibernate核心配置文件中，没有数据库配置，数据库配置在spring里面配置，注入dataSource -->
+		<property name="dataSource" ref="dataSource"></property>
+		
+		<!-- 配置hibernate基本信息 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
+				
+				<!--Mysql-->
+				<!--<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>-->
+				
+				<!--Oracle-->
+				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+			</props>
+		</property>
+		
+		<!-- 配置映射文件引入 -->
+		<!--<property name="mappingResources">
+			<list>
+				<value>com/epm/entity/User.hbm.xml</value>
+			</list>
+		</property>-->
+		
+		<property name="packagesToScan">  
+            <list>  
+                <value>com.epm.*</value>  
+            </list>  
+        </property> 
+	</bean>
+	
+	<!-- 第一步 配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<!--注入sessionFactory-->
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<!-- 第二步 开启事务注解 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<!--<import resource="classpath:user.xml"/>-->
+	
+	<!-- 创建hibernateTemplate对象 -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<!-- 注入sessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+</beans>
+
+
+
+
+
+
+
+
+
+
