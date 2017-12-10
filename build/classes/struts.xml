@@ -19,6 +19,7 @@
 		<action name="sign_*" class="signAction" method="{1}"></action>
 		<action name="notice_*" class="noticeAction" method="{1}"></action>
 		<action name="noticeRole_*" class="noticeRoleAction" method="{1}"></action>
+		<action name="log_*" class="logAction" method="{1}"></action>
 	</package>
 	
 	<constant name="struts.custom.i18n.resources" value="Mess"></constant>

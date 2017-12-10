@@ -15,4 +15,5 @@ public interface LogDao {
 	public List<Log> getDataByCriteria(Integer page,Integer pageSize,DetachedCriteria criteria);
 	public int getAllCountByCriteria(DetachedCriteria criteria);
 	public DetachedCriteria getCriteriaByIds(Integer[] ids);
+	public DetachedCriteria getCriteriaByProject(Log log);
 }

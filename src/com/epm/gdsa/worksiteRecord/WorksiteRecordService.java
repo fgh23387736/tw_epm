@@ -138,11 +138,8 @@ public class WorksiteRecordService {
 	
 
 	public Map<String, Object> getWorksiteRecordByIds(String keys,Integer page,Integer pageSize,Integer[] ids) {
-		System.out.println("this 0");
 		DetachedCriteria criteria = worksiteRecordDao.getCriteriaByIds(ids);
-		System.out.println("this 1");
 		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
-		System.out.println(map.size());
 		return map;
 	}
 

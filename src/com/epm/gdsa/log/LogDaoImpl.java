@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
+import com.epm.gdsa.document.Document;
 import com.epm.gdsa.log.Log;
 import com.epm.gdsa.log.LogDao;
 import com.epm.gdsa.log.Log;
@@ -84,6 +85,13 @@ public class LogDaoImpl implements LogDao {
 		if(ids != null && ids.length != 0){
 			criteria.add(Property.forName("logId").in( ids ) );
 		}
+		return criteria;
+	}
+
+	@Override
+	public DetachedCriteria getCriteriaByProject(Log log) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Log.class);
+		criteria.add(Property.forName("project").eq(log.getProject()));
 		return criteria;
 	}
 

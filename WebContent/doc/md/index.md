@@ -44,7 +44,7 @@
 ##### 7. [公告接受角色](noticeRole.html)<已完成>
 ##### 8. [现场记录](worksiteRecord.html)<已完成>
 ##### 9. [进度节点](point.html)<已完成>
-##### 10. [日志](log.html)
+##### 10. [日志](log.html)<已完成>
 ##### 11. [材料表](material.html)
 ##### 12. [学习资料表](learnDoc.html)<需要根据需求再设计>
 ##### 13. [用户项目](userPro.html)<已完成>

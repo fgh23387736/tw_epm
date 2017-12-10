@@ -130,7 +130,7 @@ public class LogService {
 		for (Integer integer : idsIntegers) {
 			Log log2 = logDao.getById(integer);
 			log2 = getNewLogByKeys(log2,log,keys);
-			if(log2 != null){
+			if(log2 != null && log2.getUser().getUserId().equals(user2.getUserId())){
 				logDao.update(log2);
 			}else{
 				map.put("code", 400);
@@ -167,6 +167,13 @@ public class LogService {
 		}
 		
 		map.put("result", theMap);
+		return map;
+	}
+
+	public Map<String, Object> getByProject(String keys, Integer page,
+			Integer pageSize, Log log) {
+		DetachedCriteria criteria = logDao.getCriteriaByProject(log);
+		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
 		return map;
 	}	
 	

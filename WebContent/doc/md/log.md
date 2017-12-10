@@ -6,7 +6,6 @@
 			to{
 				content(String):#内容，
 				project(Integer):#所属项目
-				user(Integer):#上传人
 			}
 			#状态码为201时表示增加成功 并返回下列信息
 			return {
