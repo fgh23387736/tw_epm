@@ -302,6 +302,7 @@ img {
 to{
     content(byte[]):#内容，
     project(int):#所属项目，
+    name(String):#名称，
 }
 #状态码为201时表示增加成功 并返回下列信息
 return {
@@ -347,7 +348,37 @@ return{
 </li>
 <li>
 <p><a name="specification_change">改</a></p>
-<pre><code>#不提供修改接口，需要修改请删除重新上传
+<pre><code>POST /tw_epm/actions/specification_updateByIds.action
+#只有管理员自身有权限进行本操作，若当前用户无权限中断程序并返回401
+to:{
+    ids:'1+',#修改Id
+    keys:'key1+key2+...'
+    key1:
+    key2:
+    .....
+}
+
+keys∈{
+    name(String):#名称，
+}   
+
+
+正确返回时状态码为201
+return{
+
+}
+
+错误时除返回码还要返回错误信息
+return{
+    error:'错误信息'
+}
+
+错误码：
+    401 Unauthorized - [*]：表示用户没有权限（令牌、用户名、密码错误）。
+    403 Forbidden - [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。
+    404 NOT FOUND - [*]：用户发出的请求针对的是不存在的记录，服务器没有进行操作，该操作是幂等的。
+    406 Not Acceptable - [GET]：用户请求的格式不可得（比如用户请求JSON格式，但是只有XML格式）。
+    500 INTERNAL SERVER ERROR - [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
 </code></pre>
 
 </li>
@@ -363,7 +394,7 @@ to:{
     ids:'1+2+3+...',#搜索记录Id
 }
 
-#根据创建用户搜索
+#根据所属项目搜索
 POST /tw_epm/actions/specification_getByProject.action
 to:{
     keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
@@ -372,11 +403,22 @@ to:{
     project(int):,#所属项目Id
 }
 
+#根据所属项目及名称搜索
+POST /tw_epm/actions/specification_getByProjectAndName.action
+to:{
+    keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
+    page:1,#当前页数，（可选，Page和PageSize必须同时存在）
+    pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
+    project(int):,#所属项目Id,
+    name(String):#名称，
+}
+
 #若Keys为空则表示搜索下方全部字段
 Keys∈{
     specificationId(int):#项目id
     content(String):#文件所在路径，
     date(String):#上传时间，
+    name(String):#名称，
     project:{
         projectId:所属项目
         name:项目名称

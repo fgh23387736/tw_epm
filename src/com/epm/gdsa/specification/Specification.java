@@ -21,7 +21,7 @@ import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 
 @Entity
-@Table(name = "GDSA_EPMS _SPECIFICATION")
+@Table(name = "GDSA_EPMS_SPECIFICATION")
 public class Specification {
 	
 	@Id
@@ -30,12 +30,15 @@ public class Specification {
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="specification_sequence") 
 	private Integer specificationId;
 	
-	@Column(name="GDSA _SPECIFICATION _DATE")
+	@Column(name="GDSA_SPECIFICATION_DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;		//日期
 	
 	@Column(name="GDSA_SPECIFICATION_CONTENT")
-	private String content; 	//单位
+	private String contentUrl; 	//内容
+	
+	@Column(name="GDSA_SPECIFICATION_NAME")
+	private String name; 	//内容
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SPECIFICATION_PROJECT")
@@ -56,14 +59,21 @@ public class Specification {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-
 	
-	public String getContent() {
-		return content;
+	public String getName() {
+		return name;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getContentUrl() {
+		return contentUrl;
+	}
+
+	public void setContentUrl(String contentUrl) {
+		this.contentUrl = contentUrl;
 	}
 
 	public Project getProject() {

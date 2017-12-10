@@ -15,6 +15,7 @@
 		<action name="pointProblem_*" class="pointProblemAction" method="{1}"></action>
 		<action name="pointAnswer_*" class="pointAnswerAction" method="{1}"></action>
 		<action name="document_*" class="documentAction" method="{1}"></action>
+		<action name="specification_*" class="specificationAction" method="{1}"></action>
 	</package>
 	
 	<constant name="struts.custom.i18n.resources" value="Mess"></constant>

@@ -236,7 +236,7 @@ public class DocumentAction extends ActionSupport implements ModelDriven<Documen
 			}else{
 				if(loginUser.getUserId() != theProject.getUser().getUserId()){
 					responseBean.setStatus(400);
-					responseBean.put("error", "只有项目发起人有权限创建项目节点");
+					responseBean.put("error", "只有项目发起人有权限上传文档");
 				}else{
 					document.setUser(loginUser);
 					String filePathString = PublicUtils.uploadFile(content, contentFileName, "/upload/document", true);
