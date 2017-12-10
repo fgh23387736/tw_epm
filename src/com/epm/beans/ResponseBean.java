@@ -40,6 +40,10 @@ public class ResponseBean {
 		this.objMap.put(key, value);
 	}
 	
+	public void remove(String key){
+		this.objMap.remove(key);
+	}
+	
 	
 	public void setStatus(int arg0) {
 		this.response.setStatus(arg0);

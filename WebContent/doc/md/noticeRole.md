@@ -66,15 +66,6 @@
 				notice(int):,#所属用户Id
 			}
 
-			#根据所属项目搜索
-			POST /tw_epm/actions/noticeRole_getByProject.action
-			to:{
-				keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
-				page:1,#当前页数，（可选，Page和PageSize必须同时存在）
-				pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
-				project(int):,#所属项目Id
-			}
-
 			#根据所属项目角色搜索
 			POST /tw_epm/actions/noticeRole_getByProRole.action
 			to:{
@@ -94,7 +85,8 @@
 				}#所属公告，
 				proRole:{
 					proRoleId：，
-					name
+					name，
+					auth，
 				}#所属角色，
 			}
 
