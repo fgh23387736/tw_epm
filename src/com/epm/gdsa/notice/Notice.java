@@ -43,6 +43,9 @@ public class Notice {
 	@Column(name="GDSA_NOTICE_CONTENT")
 	private String content; 	//内容
 	
+	@Column(name="GDSA_NOTICE_NAME")
+	private String name; 	//名称
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_NOTICE_USER")
 	private User user; 	//发布者
@@ -69,6 +72,14 @@ public class Notice {
 
 	public void setNoticeId(Integer noticeId) {
 		this.noticeId = noticeId;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Date getDate() {

@@ -17,6 +17,7 @@
 		<action name="document_*" class="documentAction" method="{1}"></action>
 		<action name="specification_*" class="specificationAction" method="{1}"></action>
 		<action name="sign_*" class="signAction" method="{1}"></action>
+		<action name="notice_*" class="noticeAction" method="{1}"></action>
 	</package>
 	
 	<constant name="struts.custom.i18n.resources" value="Mess"></constant>

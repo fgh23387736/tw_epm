@@ -6,6 +6,7 @@
 			to{
 				content(String):#内容，
 				project(int):#所属项目，
+				name(String):#名称
 			}
 			#状态码为201时表示增加成功 并返回下列信息
 			return {
@@ -57,6 +58,7 @@
 			
 			keys∈{
 				content(String):#内容，
+				name(String):#名称
 			}	
 		
 			
@@ -105,11 +107,22 @@
 				project(int):,#所属项目Id
 			}
 
+			#根据所属项目及名称搜索
+			POST /tw_epm/actions/notice_getByProjectAndName.action
+			to:{
+				keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
+				page:1,#当前页数，（可选，Page和PageSize必须同时存在）
+				pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
+				project(int):,#所属项目Id,
+				name(String):#名称，
+			}
+
 			#若Keys为空则表示搜索下方全部字段
 			Keys∈{
 				noticeId(int):#项目id
 				date(String):#时间 eg "2017-10-10 00:00:00"，
 				content(String):#内容，
+				name(String):#名称
 				project:{
 					projectId：，
 					name
