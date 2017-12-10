@@ -34,9 +34,6 @@ public class Sign {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;		//日期
 	
-	@Column(name="GDSA_SIGN_STATE")
-	private Integer state;		//状态
-	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SIGN_USER")
 	private User user; 	//单位
@@ -77,13 +74,6 @@ public class Sign {
 		this.project = project;
 	}
 	
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
 	
 	
 }

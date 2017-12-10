@@ -39,7 +39,7 @@
 ##### 2. [用户](user.html)<已完成>
 ##### 3. [项目资料](document.html)<已完成>
 ##### 4. [规范](specification.html)<已完成>
-##### 5. [签到](sign.html)
+##### 5. [签到](sign.html)<已完成>
 ##### 6. [公告](notice.html)
 ##### 7. [公告接受角色](noticeRole.html)
 ##### 8. [现场记录](worksiteRecord.html)<已完成>

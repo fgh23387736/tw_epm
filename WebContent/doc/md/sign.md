@@ -4,7 +4,6 @@
 			POST /tw_epm/actions/sign_add.action
 			#只有管理员有权限操作
 			to{
-				date(String):#时间 eg "2017-10-10 00:00:00"，
 				state(int):#状态，
 				project(int):#所属项目，
 			}
@@ -58,7 +57,6 @@
 			
 			keys∈{
 				date(String):#时间 eg "2017-10-10 00:00:00"，
-				state(int):#状态，
 				project(int):#所属项目，
 			}	
 		
@@ -112,7 +110,6 @@
 			Keys∈{
 				signId(int):#项目id
 				date(String):#时间 eg "2017-10-10 00:00:00"，
-				state(int):#状态，
 				project:{
 					projectId：，
 					name
