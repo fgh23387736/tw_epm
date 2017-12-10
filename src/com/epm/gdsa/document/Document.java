@@ -44,7 +44,7 @@ public class Document {
 	private String unit; 	//单位
 	
 	@Column(name="GDSA_DOCUMENT_CONTENT")
-	private String content; 	//内容
+	private String contentUrl; 	//内容
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_DOCUMENT_USER")
@@ -94,12 +94,14 @@ public class Document {
 		this.unit = unit;
 	}
 
-	public String getContent() {
-		return content;
+	
+
+	public String getContentUrl() {
+		return contentUrl;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setContentUrl(String contentUrl) {
+		this.contentUrl = contentUrl;
 	}
 
 	public User getUser() {

@@ -37,7 +37,7 @@
 
 ##### 1. [项目](project.html)<已完成>
 ##### 2. [用户](user.html)<已完成>
-##### 3. [项目资料](document.html)
+##### 3. [项目资料](document.html)<已完成>
 ##### 4. [规范](specification.html)
 ##### 5. [签到](sign.html)
 ##### 6. [公告](notice.html)

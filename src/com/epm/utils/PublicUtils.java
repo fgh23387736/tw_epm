@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.io.File;
 import java.io.FileInputStream;  
 import java.io.FileOutputStream;  
 import java.io.IOException;  
@@ -20,6 +21,9 @@ import java.io.OutputStream;
 
 
 
+
+
+import org.apache.commons.io.FileUtils;
 import org.apache.struts2.ServletActionContext;
 import org.junit.Test;
 
@@ -66,7 +70,8 @@ public class PublicUtils {
 		type = type.split(";")[0];
 		String name =""+ new Date().getTime()+PublicUtils.getRandom(0, 9)+"."+type;
 		System.out.println(name);
-		String realPath = ServletActionContext.getServletContext().getRealPath(path); 
+		String realPath = ServletActionContext.getServletContext().getRealPath(path);
+		PublicUtils.checkDir(realPath);
 		realPath += "/" + name;
 		path = "/tw_epm"+path+"/" + name;
 		BASE64Decoder decoder = new BASE64Decoder();
@@ -95,5 +100,48 @@ public class PublicUtils {
 		Random random = new Random();
         int s = random.nextInt(max)%(max-min+1) + min;
         return s;
+	}
+	
+	public static String uploadFile(File file,String fileName,String path,boolean isResetName){
+		if(file == null || fileName == null || fileName.split("\\.").length < 2)
+			return null;
+		
+		if(isResetName){
+			String type = fileName.split("\\.")[1];
+			fileName =""+ new Date().getTime()+PublicUtils.getRandom(0, 9)+"."+type;
+		}
+		String realPath = ServletActionContext.getServletContext().getRealPath(path); 
+		PublicUtils.checkDir(realPath);
+		realPath += "/" + fileName;
+		path = "/tw_epm"+path+"/" + fileName;
+		BASE64Decoder decoder = new BASE64Decoder();
+		try {
+			File serverFile = new File(realPath);
+			FileUtils.copyFile(file, serverFile);
+			return path;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static String getServerRootPath(){
+		return ServletActionContext.getServletContext().getRealPath("/"); 
+	}
+	
+	public static void checkDir(String path){
+		File file = new File(path);
+		if(!file.exists()){
+			file.mkdirs();
+		}
+	}
+	
+	public static boolean deleteFileFromServer(String path){
+		File file = new File(PublicUtils.getServerRootPath()+path);
+		System.out.println(file);
+		if(file.exists()){
+			return file.delete();
+		}
+		return true;
 	}
 }

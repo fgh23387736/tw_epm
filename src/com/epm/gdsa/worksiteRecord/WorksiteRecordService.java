@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
+import com.epm.utils.PublicUtils;
 
 @Transactional
 @Component(value="worksiteRecordService")
@@ -177,7 +178,18 @@ public class WorksiteRecordService {
 		for (Integer integer : idsIntegers) {
 			WorksiteRecord worksiteRecord2 = worksiteRecordDao.getById(integer);
 			if(worksiteRecord2 != null){
-				worksiteRecordDao.delete(worksiteRecord2);
+				if(PublicUtils.deleteFileFromServer(worksiteRecord2.getThumbnail().replace("/tw_epm", ""))){
+					worksiteRecordDao.delete(worksiteRecord2);
+				}else{
+					map.put("code", 400);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的文件删除失败;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+					}
+					
+				}
 			}else{
 				map.put("code", 400);
 				if(theMap == null){
