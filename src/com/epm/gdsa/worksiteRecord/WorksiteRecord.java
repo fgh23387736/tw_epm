@@ -15,8 +15,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import oracle.sql.BFILE;
-
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 

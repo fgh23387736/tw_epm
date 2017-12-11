@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.log.Log;
-import com.epm.gdsa.notice.Notice;
-import com.epm.gdsa.proRole.ProRole;
+import com.epm.gdsa.proRole.ProRoleService;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
@@ -37,6 +36,9 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 	@Autowired
 	private UserProService userProService;
 	
+	@Autowired
+	private ProRoleService proRoleService;
+	
 	private String ids;
 	
 	private Integer page;
@@ -55,6 +57,16 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 	}
 	
 	
+	public ProRoleService getProRoleService() {
+		return proRoleService;
+	}
+
+
+	public void setProRoleService(ProRoleService proRoleService) {
+		this.proRoleService = proRoleService;
+	}
+
+
 	public ProjectService getProjectService() {
 		return projectService;
 	}
@@ -145,9 +157,9 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 	
 	public void getByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -165,13 +177,13 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 	
 	public void getByProject(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(log.getProject() == null || log.getProject().getProjectId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
 				Map<String, Object> map = logService.getByProject(keys,page,pageSize,log);
@@ -188,48 +200,52 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 		}
 	}
 	public void add(){
-		ResponseBean response =new ResponseBean();
+		ResponseBean responseBean =new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		
 		if (loginUser == null) {
-			response.setStatus(400);
-			response.put("error", "您还未登录，无权获取本信息");
+			responseBean.setStatus(401);
+			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
-			Project projectTemp = projectService.getById(log.getProject().getProjectId());
-			UserPro theUserPro = new UserPro();
-			theUserPro.setUser(loginUser);
-			theUserPro.setProject(projectTemp);
-			Map<String,Object> theUserProMap = userProService.getByProjectAndUser("proRole", null, null, theUserPro);
-			Boolean isOk = false;
-			List<Map<String, Object>> mapList = (List<Map<String, Object>>) theUserProMap.get("resultList");
-			for (Map<String, Object> map : mapList) {
-				if((Integer)((Map<String, Object>)map.get("proRole")).get("auth") >= 2){
-					isOk = true;
-					break;
-				}
-			}
-			if(projectTemp.getUser().getUserId() == loginUser.getUserId()){
-				isOk = true;
-			}
-			if(!isOk){
-				response.setStatus(400);
-				response.put("error", "您不具有权限提问");
+			Project theProject = projectService.getById(log.getProject().getProjectId());
+			if(theProject == null){
+				responseBean.setStatus(404);
+				responseBean.put("error", "项目不存在");
 			}else{
-				log.setUser(loginUser);
-				log.setDate(new Date());
-				log = logService.add(log);
-				if(log.getLogId() != null) {
-					response.setStatus(200);
-					response.put("logId", log.getLogId());
-				} else {
-					response.put("error", "添加失败，系统错误");
-					response.setStatus(500);
+				boolean isHaveTheAuth = false;
+				List<UserPro> theUserProList = userProService.getByProjectAndUser(theProject,loginUser);
+				if(theUserProList.size() > 0 ){
+					for (UserPro userPro : theUserProList) {
+						if(proRoleService.isHaveTheAuth(userPro.getProRole(), ProRoleAuthEnum.LOG)){
+							isHaveTheAuth = true;
+							break;
+						}
+					}
+				}
+				if(loginUser.getUserId() == theProject.getUser().getUserId()){
+					isHaveTheAuth = true;
+				}
+				if(!isHaveTheAuth){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
+				}else{
+					//获得权限时业务逻辑
+					log.setUser(loginUser);
+					log.setDate(new Date());
+					log = logService.add(log);
+					if(log.getLogId() != null) {
+						responseBean.setStatus(200);
+						responseBean.put("logId", log.getLogId());
+					} else {
+						responseBean.put("error", "添加失败，系统错误");
+						responseBean.setStatus(500);
+					}
+					
 				}
 			}
 		}
-		
-		
 		try {
-			response.write(response.getJsonString());
+			responseBean.write(responseBean.getJsonString());
 		} catch (IOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -240,7 +256,7 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -260,7 +276,7 @@ public class LogAction extends ActionSupport implements ModelDriven<Log>{
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");

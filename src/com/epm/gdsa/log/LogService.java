@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.epm.gdsa.log.Log;
 import com.epm.gdsa.log.LogDao;
+import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 
 @Transactional
@@ -123,17 +124,38 @@ public class LogService {
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			Log log, User user2) {
+			Log log, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			Log log2 = logDao.getById(integer);
-			log2 = getNewLogByKeys(log2,log,keys);
-			if(log2 != null && log2.getUser().getUserId().equals(user2.getUserId())){
-				logDao.update(log2);
+			if(log2 != null){
+				Project theProject = log2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId()) && !log2.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					//具有权限时的业务逻辑
+					log2 = getNewLogByKeys(log2,log,keys);
+					logDao.update(log2);
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -147,16 +169,36 @@ public class LogService {
 		return map;
 	}
 
-	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User user2) {
+	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			Log log2 = logDao.getById(integer);
 			if(log2 != null){
-				logDao.delete(log2);
+				Project theProject = log2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId()) && !log2.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					//具有权限时的业务逻辑
+					logDao.delete(log2);
+				}
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");

@@ -301,12 +301,6 @@ img {
 #只有管理员有权限操作
 to{
     name(String):#名称，
-    auth(Integer):#权限∈{
-        0：项目临时人员，查看公告
-        1：项目工作人员，查看公告
-        2：现场负责人，可以发布公告
-        3：项目经理(项目发起人)，可以修改项目，发送公告，上传学习资料，修改进度，任命现场负责人，调整参与人员
-    }，
     project(Integer):#所属项目
 }
 #状态码为201时表示增加成功 并返回下列信息
@@ -365,12 +359,6 @@ to:{
 
 keys∈{
     name(String):#名称，
-    auth(Integer):#权限∈{
-        0：项目临时人员，查看公告
-        1：项目工作人员，查看公告
-        2：现场负责人，可以发布公告
-        3：项目经理(项目发起人)，可以修改项目，发送公告，上传学习资料，修改进度，任命现场负责人，调整参与人员
-    }，
 }   
 
 
@@ -406,24 +394,19 @@ to:{
 }
 
 #根据创建用户搜索
-POST /tw_epm/actions/proRole_getByProject.action
+POST /tw_epm/actions/proRole_getByProjectAndName.action
 to:{
     keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
     page:1,#当前页数，（可选，Page和PageSize必须同时存在）
     pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
-    project:,#所属项目Id
+    project:,#所属项目Id，
+    name:&quot;&quot;#名称，若为空则搜索当前项目下的全部
 }
 
 #若Keys为空则表示搜索下方全部字段
 Keys∈{
     proRoleId(int):#id
     name(String):#名称，
-    auth(Integer):#权限∈{
-        0：项目临时人员，查看公告
-        1：项目工作人员，查看公告
-        2：现场负责人，可以发布公告
-        3：项目经理(项目发起人)，可以修改项目，发送公告，上传学习资料，修改进度，任命现场负责人，调整参与人员
-    }，
     project:{
         projectId:项目id
         name：项目名称
@@ -436,6 +419,14 @@ Keys∈{
         }，
         ...
     ]#包含人员
+    auths:[
+        {
+            proRoleAuthId:id
+            name：名称
+            describe:描述
+        }，
+        ...
+    ]#具有权限
 }
 
 #正确返回时状态码为200

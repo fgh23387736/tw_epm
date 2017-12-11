@@ -15,8 +15,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import oracle.sql.BFILE;
-
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 
@@ -67,6 +65,14 @@ public class Material {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_MATERIAL_SELLER")
 	private User seller; 	//销售者
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="GDSA_MATERIAL_USER")
+	private User user; 	//上传者
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="GDSA_MATERIAL_PROJECT")
+	private Project project; 	//上传者
 
 	public Integer getMaterialId() {
 		return materialId;
@@ -162,6 +168,22 @@ public class Material {
 
 	public void setSeller(User seller) {
 		this.seller = seller;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
 	}
 
 	

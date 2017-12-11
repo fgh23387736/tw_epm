@@ -1,6 +1,8 @@
 package com.epm.gdsa.worksiteRecord;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.ServletActionContext;
@@ -9,7 +11,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.enums.ProRoleAuthEnum;
+import com.epm.gdsa.proRole.ProRoleService;
+import com.epm.gdsa.project.Project;
+import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
+import com.epm.gdsa.userPro.UserPro;
+import com.epm.gdsa.userPro.UserProService;
 import com.epm.utils.PublicUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
@@ -20,6 +28,15 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 	
 	@Autowired
 	private WorksiteRecordService worksiteRecordService;
+	
+	@Autowired
+	private UserProService userProService;
+	
+	@Autowired
+	private ProRoleService proRoleService;
+	
+	@Autowired
+	private ProjectService projectService;
 	
 	private String ids;
 	
@@ -86,6 +103,36 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 		this.pageSize = pageSize;
 	}
 
+	
+	public UserProService getUserProService() {
+		return userProService;
+	}
+
+
+	public void setUserProService(UserProService userProService) {
+		this.userProService = userProService;
+	}
+
+
+	public ProRoleService getProRoleService() {
+		return proRoleService;
+	}
+
+
+	public void setProRoleService(ProRoleService proRoleService) {
+		this.proRoleService = proRoleService;
+	}
+
+	
+	public ProjectService getProjectService() {
+		return projectService;
+	}
+
+
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
+	}
+
 
 	public String getKeys() {
 		return keys;
@@ -105,19 +152,12 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 	public void setWorksiteRecord(WorksiteRecord worksiteRecord) {
 		this.worksiteRecord = worksiteRecord;
 	}
-
-	public void testWorksiteRecord(){
-		String imgStr = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wgARCAAQABEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAG/AB//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAEFAl//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAY/Al//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEPPP/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAFBABAAAAAAAAAAAAAAAAAAAAIP/aAAgBAQABPxBf/9k=";
-		String path = "/upload/photo";
-		System.out.println(path);
-		System.out.println(PublicUtils.generateImage(imgStr, path));
-	}
 	
 	public void getByProject(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(worksiteRecord.getProject() == null || worksiteRecord.getProject().getProjectId() == null){
@@ -140,10 +180,9 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 	
 	public void getByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		System.out.println(user2);
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -162,34 +201,55 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 	
 	public void add(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		String method = ServletActionContext.getRequest().getMethod();
-		System.out.println(method);
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
-			
-			Map<String, Object> thumMap = PublicUtils.generateImage(worksiteRecord.getThumbnail(), "/upload/photo");
-			if(thumMap == null ){
-				responseBean.put("error", "添加失败，系统错误");
-				System.out.println("thumMap==null");
-				responseBean.setStatus(500);
+			Project theProject = projectService.getById(worksiteRecord.getProject().getProjectId());
+			if(theProject == null){
+				responseBean.setStatus(404);
+				responseBean.put("error", "项目不存在");
 			}else{
-				worksiteRecord.setThumbnail((String)thumMap.get("path"));
-				worksiteRecord.setSize( new Float((float)(int)thumMap.get("size")));
-				worksiteRecord.setUser(user2);
-				worksiteRecord = worksiteRecordService.add(worksiteRecord);
-				if(worksiteRecord.getWorksiteRecordId() != null) {
-					responseBean.setStatus(200);
-					responseBean.put("worksiteRecordId", worksiteRecord.getWorksiteRecordId());
-				} else {
-					responseBean.put("error", "添加失败，系统错误");
-					System.out.println("id==null");
-					responseBean.setStatus(500);
+				boolean isHaveTheAuth = false;
+				List<UserPro> theUserProList = userProService.getByProjectAndUser(theProject,loginUser);
+				if(theUserProList.size() > 0 ){
+					for (UserPro userPro : theUserProList) {
+						if(proRoleService.isHaveTheAuth(userPro.getProRole(), ProRoleAuthEnum.WORKSITE_RECORD)){
+							isHaveTheAuth = true;
+							break;
+						}
+					}
+				}
+				if(loginUser.getUserId() == theProject.getUser().getUserId()){
+					isHaveTheAuth = true;
+				}
+				if(!isHaveTheAuth){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
+				}else{
+					//获得权限时业务逻辑
+					Map<String, Object> thumMap = PublicUtils.generateImage(worksiteRecord.getThumbnail(), "/upload/photo");
+					if(thumMap == null ){
+						responseBean.put("error", "添加失败，系统错误");
+						System.out.println("thumMap==null");
+						responseBean.setStatus(500);
+					}else{
+						worksiteRecord.setThumbnail((String)thumMap.get("path"));
+						worksiteRecord.setSize( new Float((float)(int)thumMap.get("size")));
+						worksiteRecord.setUser(loginUser);
+						worksiteRecord = worksiteRecordService.add(worksiteRecord);
+						if(worksiteRecord.getWorksiteRecordId() != null) {
+							responseBean.setStatus(201);
+							responseBean.put("worksiteRecordId", worksiteRecord.getWorksiteRecordId());
+						} else {
+							responseBean.put("error", "添加失败，系统错误");
+							System.out.println("id==null");
+							responseBean.setStatus(500);
+						}
+					}
 				}
 			}
-			
 		}
 		try {
 			responseBean.writeTheMap();
@@ -201,13 +261,13 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 	
 	public void updateByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
-			Map<String, Object> map = worksiteRecordService.updateByIds(keys,idsIntegers,worksiteRecord,user2);
+			Map<String, Object> map = worksiteRecordService.updateByIds(keys,idsIntegers,worksiteRecord,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
 		}
@@ -221,13 +281,13 @@ public class WorksiteRecordAction extends ActionSupport implements ModelDriven<W
 	
 	public void deleteByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
-			Map<String, Object> map = worksiteRecordService.deleteByIds(idsIntegers,user2);
+			Map<String, Object> map = worksiteRecordService.deleteByIds(idsIntegers,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
 		}

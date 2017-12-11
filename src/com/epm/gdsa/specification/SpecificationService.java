@@ -42,7 +42,8 @@ public class SpecificationService {
 					"content",
 					"name",
 					"date",
-					"project"
+					"project",
+					"user"
 			};
 			keysArrStrings = tempKeys;
 		}
@@ -74,6 +75,12 @@ public class SpecificationService {
 				Project theProject = specification.getProject();
 				theMap.put("projectId", theProject.getProjectId());
 				theMap.put("name", theProject.getName());
+				return theMap;
+			case "user":
+				theMap = new HashMap<String, Object>();
+				User theUser = specification.getUser();
+				theMap.put("userId", theUser.getUserId());
+				theMap.put("name", theUser.getName());
 				return theMap;
 			default:
 				return null;
@@ -132,17 +139,38 @@ public class SpecificationService {
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			Specification specification, User user2) {
+			Specification specification, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			Specification specification2 = specificationDao.getById(integer);
-			specification2 = getNewSpecificationByKeys(specification2,specification,keys);
 			if(specification2 != null){
-				specificationDao.update(specification2);
+				Project theProject = specification2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId()) && !specification2.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					//这里写获得权限之后的业务逻辑
+					specification2 = getNewSpecificationByKeys(specification2,specification,keys);
+					specificationDao.update(specification2);
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -159,25 +187,44 @@ public class SpecificationService {
 	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			Specification specification2 = specificationDao.getById(integer);
 			if(specification2 != null){
-				if(PublicUtils.deleteFileFromServer(specification2.getContentUrl().replace("/tw_epm", ""))){
-					specificationDao.delete(specification2);
-				}else{
-					map.put("code", 400);
+				Project theProject = specification2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
 					if(theMap == null){
 						theMap = new HashMap<String, Object>();
-						theMap.put("error", "id为"+integer+"的文件删除失败;");
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
 					}else{
-						theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
 					}
-					
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId()) && !specification2.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					//这里写获得权限之后的业务逻辑
+					if(PublicUtils.deleteFileFromServer(specification2.getContentUrl().replace("/tw_epm", ""))){
+						specificationDao.delete(specification2);
+					}else{
+						map.put("code", 500);
+						if(theMap == null){
+							theMap = new HashMap<String, Object>();
+							theMap.put("error", "id为"+integer+"的文件删除失败;");
+						}else{
+							theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+						}
+						
+					}
 				}
-				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");

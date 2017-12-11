@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
 import com.epm.gdsa.proRole.ProRole;
+import com.epm.gdsa.project.Project;
+import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
 import com.epm.utils.PublicUtils;
 import com.opensymphony.xwork2.ActionSupport;
@@ -21,6 +23,9 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 	
 	@Autowired
 	private ProRoleService proRoleService;
+	
+	@Autowired
+	private ProjectService projectService;
 	
 	private String ids;
 	
@@ -40,6 +45,16 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 	}
 	
 	
+	public ProjectService getProjectService() {
+		return projectService;
+	}
+
+
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
+	}
+
+
 	public ProRoleService getProRoleService() {
 		return proRoleService;
 	}
@@ -107,18 +122,12 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 		this.proRole = proRole;
 	}
 
-	public void testProRole(){
-		String imgStr = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wgARCAAQABEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAG/AB//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAEFAl//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAY/Al//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEPPP/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAFBABAAAAAAAAAAAAAAAAAAAAIP/aAAgBAQABPxBf/9k=";
-		String path = "/upload/photo";
-		System.out.println(path);
-		System.out.println(PublicUtils.generateImage(imgStr, path));
-	}
 	
 	public void getByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -136,13 +145,13 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 	
 	public void getByProjectAndName(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(proRole.getProject() == null || proRole.getProject().getProjectId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
 				Map<String, Object> map = proRoleService.getByProjectAndName(keys,page,pageSize,proRole);
@@ -159,19 +168,38 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 		}
 	}
 	
-	public void add(){
-		ResponseBean response =new ResponseBean();
-		proRole = proRoleService.add(proRole);
-		if(proRole.getProRoleId() != null) {
-			response.setStatus(200);
-			response.put("success", "添加成功");
-		} else {
-			response.put("error", "添加失败，系统错误");
-			response.setStatus(500);
+	public void add(){		
+		ResponseBean responseBean = new ResponseBean();
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
+			responseBean.put("error", "您还未登录，无权获取本信息");
+		}else{
+			if(proRole.getProject() == null || proRole.getProject().getProjectId() == null){
+				responseBean.setStatus(404);
+				responseBean.put("error", "项目不存在");
+			}else{
+				Project theProject = projectService.getById(proRole.getProject().getProjectId());
+				if(theProject == null){
+					responseBean.setStatus(404);
+					responseBean.put("error", "项目不存在");
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId())){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
+				}else{
+					proRole = proRoleService.add(proRole);
+					if(proRole.getProRoleId() != null) {
+						responseBean.setStatus(201);
+						responseBean.put("proRoleId", proRole.getProRoleId());
+					} else {
+						responseBean.put("error", "添加失败，系统错误");
+						responseBean.setStatus(500);
+					}
+				}
+			}
 		}
-		
 		try {
-			response.write(response.getJsonString());
+			responseBean.writeTheMap();
 		} catch (IOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -180,13 +208,13 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 	
 	public void updateByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
-			Map<String, Object> map = proRoleService.updateByIds(keys,idsIntegers,proRole,user2);
+			Map<String, Object> map = proRoleService.updateByIds(keys,idsIntegers,proRole,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
 		}
@@ -202,7 +230,7 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			System.out.println(ids);

@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.point.Point;
 import com.epm.gdsa.proRole.ProRole;
 import com.epm.gdsa.proRole.ProRoleDao;
+import com.epm.gdsa.proRoleAuth.ProRoleAuth;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 import com.epm.gdsa.userPro.UserPro;
@@ -69,8 +71,6 @@ public class ProRoleService {
 				return proRole.getProRoleId();
 			case "name":
 				return proRole.getName();
-			case "auth":
-				return proRole.getAuth();
 			case "project":
 				theMap = new HashMap<String, Object>();
 				Project theProject = proRole.getProject();
@@ -107,9 +107,6 @@ public class ProRoleService {
 			switch (key) {
 				case "name":
 					proRole.setName(newProRole.getName());
-					break;
-				case "auth":
-					proRole.setAuth(newProRole.getAuth());
 					break;
 				default:
 					
@@ -149,17 +146,37 @@ public class ProRoleService {
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			ProRole proRole, User user2) {
+			ProRole proRole, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			ProRole proRole2 = proRoleDao.getById(integer);
-			proRole2 = getNewProRoleByKeys(proRole2,proRole,keys);
 			if(proRole2 != null){
-				proRoleDao.update(proRole2);
+				Project theProject = proRole2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					proRole2 = getNewProRoleByKeys(proRole2,proRole,keys);
+					proRoleDao.update(proRole2);
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -167,22 +184,41 @@ public class ProRoleService {
 					theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败;");
 				}
 			}
+			
 		}
-		
 		map.put("result", theMap);
 		return map;
 	}
 
-	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User user2) {
+	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			ProRole proRole2 = proRoleDao.getById(integer);
 			if(proRole2 != null){
-				proRoleDao.delete(proRole2);
+				Project theProject = proRole2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					proRoleDao.delete(proRole2);
+				}
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");
@@ -190,6 +226,7 @@ public class ProRoleService {
 					theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败：数据不存在;");
 				}
 			}
+			
 		}
 		
 		map.put("result", theMap);
@@ -202,10 +239,32 @@ public class ProRoleService {
 		DetachedCriteria criteria = proRoleDao.getCriteriaByProjectAndName(proRole);
 		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
 		return map;
+	}
+
+	public ProRole getById(Integer proRoleId) {
+		return proRoleDao.getById(proRoleId);
 	}	
 	
 
-
+	public boolean isHaveTheAuth(ProRole proRole,ProRoleAuthEnum proRoleAuthEnum){
+		if(proRole == null){
+			return false;
+		}else if(proRole.getProRoleId() == null){
+			return false;
+		}else if(proRoleAuthEnum == null){
+			return false;
+		}else{
+			proRole = proRoleDao.getById(proRole.getProRoleId());
+			Set<ProRoleAuth> proRoleAuths = proRole.getProRoleAuths();
+			for (ProRoleAuth proRoleAuth : proRoleAuths) {
+				if(proRoleAuth.getAuth() == proRoleAuthEnum){
+					return true;
+				}
+			}
+			return false;
+		}
+		
+	}
 
 
 

@@ -144,17 +144,39 @@ public class WorksiteRecordService {
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			WorksiteRecord worksiteRecord, User user2) {
+			WorksiteRecord worksiteRecord, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			WorksiteRecord worksiteRecord2 = worksiteRecordDao.getById(integer);
-			worksiteRecord2 = getNewWorksiteRecordByKeys(worksiteRecord2,worksiteRecord,keys);
+			
 			if(worksiteRecord2 != null){
-				worksiteRecordDao.update(worksiteRecord2);
+				Project theProject = worksiteRecord2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId()) && !worksiteRecord2.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					//具有权限时的业务逻辑
+					worksiteRecord2 = getNewWorksiteRecordByKeys(worksiteRecord2,worksiteRecord,keys);
+					worksiteRecordDao.update(worksiteRecord2);
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -168,27 +190,47 @@ public class WorksiteRecordService {
 		return map;
 	}
 
-	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User user2) {
+	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			WorksiteRecord worksiteRecord2 = worksiteRecordDao.getById(integer);
 			if(worksiteRecord2 != null){
-				if(PublicUtils.deleteFileFromServer(worksiteRecord2.getThumbnail().replace("/tw_epm", ""))){
-					worksiteRecordDao.delete(worksiteRecord2);
-				}else{
-					map.put("code", 400);
+				Project theProject = worksiteRecord2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
 					if(theMap == null){
 						theMap = new HashMap<String, Object>();
-						theMap.put("error", "id为"+integer+"的文件删除失败;");
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
 					}else{
-						theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
 					}
-					
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId()) && !worksiteRecord2.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					//具有权限时的业务逻辑
+					if(PublicUtils.deleteFileFromServer(worksiteRecord2.getThumbnail().replace("/tw_epm", ""))){
+						worksiteRecordDao.delete(worksiteRecord2);
+					}else{
+						map.put("code", 500);
+						if(theMap == null){
+							theMap = new HashMap<String, Object>();
+							theMap.put("error", "id为"+integer+"的文件删除失败;");
+						}else{
+							theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+						}
+						
+					}
 				}
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");

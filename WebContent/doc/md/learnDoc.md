@@ -6,7 +6,7 @@
 			to{
 				content(byte[]):#内容，
 				name(String):#名称，
-				unit(String):#所属单位，
+				type(Integer):#类型，
 				project(Integer):#所属项目
 			}
 			#状态码为201时表示增加成功 并返回下列信息
@@ -59,8 +59,7 @@
 			
 			keys∈{
 				name(String):#名称，
-				unit(String):#所属单位，
-				project(Integer):#所属项目
+				type(Integer):#类型
 			}	
 		
 			
@@ -105,7 +104,7 @@
 				learnDocId(int):#id
 				content(String):#文件所处路径，
 				name(String):#名称，
-				unit(String):#所属单位，
+				type(Integer):#类型，
 				project:{
 					projectId:项目id
 					name：项目名称
@@ -114,7 +113,6 @@
 					userId:id
 					name：名称
 				}#上传人
-				date(String):#上传时间
 			}
 
 			#正确返回时状态码为200

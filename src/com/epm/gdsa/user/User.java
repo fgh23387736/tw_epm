@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.epm.gdsa.document.Document;
+import com.epm.gdsa.learnDoc.LearnDoc;
 import com.epm.gdsa.log.Log;
 import com.epm.gdsa.material.Material;
 import com.epm.gdsa.notice.Notice;
@@ -24,6 +25,7 @@ import com.epm.gdsa.point.Point;
 import com.epm.gdsa.pointProblem.PointProblem;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.sign.Sign;
+import com.epm.gdsa.specification.Specification;
 import com.epm.gdsa.userPro.UserPro;
 import com.epm.gdsa.worksiteRecord.WorksiteRecord;
 
@@ -86,19 +88,23 @@ public class User {
 	
 	@OneToMany(mappedBy="buyer",fetch=FetchType.LAZY)
 	@JSONField(serialize=false)
-	private Set<Material> buyers = new HashSet<Material>();
+	private Set<Material> buyerMaterials = new HashSet<Material>();
 	
 	@OneToMany(mappedBy="seller",fetch=FetchType.LAZY)
 	@JSONField(serialize=false)
-	private Set<Material> sellers = new HashSet<Material>();
+	private Set<Material> sellerMaterials = new HashSet<Material>();
 	
 	@OneToMany(mappedBy="checker",fetch=FetchType.LAZY)
 	@JSONField(serialize=false)
-	private Set<Material> checkers = new HashSet<Material>();
+	private Set<Material> checkerMaterials = new HashSet<Material>();
 	
 	@OneToMany(mappedBy="submitter",fetch=FetchType.LAZY)
 	@JSONField(serialize=false)
-	private Set<Material> submitters = new HashSet<Material>();
+	private Set<Material> submitterMaterials = new HashSet<Material>();
+	
+	@OneToMany(mappedBy="user",fetch=FetchType.LAZY)
+	@JSONField(serialize=false)
+	private Set<Material> userMaterials = new HashSet<Material>();
 	
 	@OneToMany(mappedBy="user",fetch=FetchType.LAZY)
 	@JSONField(serialize=false)
@@ -116,6 +122,14 @@ public class User {
 	@JSONField(serialize=false)
 	private Set<PointProblem> pointProblems = new HashSet<PointProblem>();
 	
+	@OneToMany(mappedBy="user",fetch=FetchType.LAZY)
+	@JSONField(serialize=false)
+	private Set<Specification> specifications = new HashSet<Specification>();
+	
+	@OneToMany(mappedBy="user",fetch=FetchType.LAZY)
+	@JSONField(serialize=false)
+	private Set<LearnDoc> learnDocs = new HashSet<LearnDoc>();
+	
 	@Transient
 	private String rePassword;
 	
@@ -124,6 +138,16 @@ public class User {
 	
 	
 	
+	public Set<LearnDoc> getLearnDocs() {
+		return learnDocs;
+	}
+
+
+	public void setLearnDocs(Set<LearnDoc> learnDocs) {
+		this.learnDocs = learnDocs;
+	}
+
+
 	public Set<PointProblem> getPointProblems() {
 		return pointProblems;
 	}
@@ -182,44 +206,54 @@ public class User {
 	public void setUserPros(Set<UserPro> userPros) {
 		this.userPros = userPros;
 	}
-
-
-	public Set<Material> getBuyers() {
-		return buyers;
+	
+	public Set<Material> getBuyerMaterials() {
+		return buyerMaterials;
 	}
 
 
-	public void setBuyers(Set<Material> buyers) {
-		this.buyers = buyers;
+	public void setBuyerMaterials(Set<Material> buyerMaterials) {
+		this.buyerMaterials = buyerMaterials;
 	}
 
 
-	public Set<Material> getSellers() {
-		return sellers;
-	}
-
-	public void setSellers(Set<Material> sellers) {
-		this.sellers = sellers;
+	public Set<Material> getSellerMaterials() {
+		return sellerMaterials;
 	}
 
 
-	public Set<Material> getCheckers() {
-		return checkers;
+	public void setSellerMaterials(Set<Material> sellerMaterials) {
+		this.sellerMaterials = sellerMaterials;
 	}
 
 
-	public void setCheckers(Set<Material> checkers) {
-		this.checkers = checkers;
+	public Set<Material> getCheckerMaterials() {
+		return checkerMaterials;
 	}
 
 
-	public Set<Material> getSubmitters() {
-		return submitters;
+	public void setCheckerMaterials(Set<Material> checkerMaterials) {
+		this.checkerMaterials = checkerMaterials;
 	}
 
 
-	public void setSubmitters(Set<Material> submitters) {
-		this.submitters = submitters;
+	public Set<Material> getSubmitterMaterials() {
+		return submitterMaterials;
+	}
+
+
+	public void setSubmitterMaterials(Set<Material> submitterMaterials) {
+		this.submitterMaterials = submitterMaterials;
+	}
+
+
+	public Set<Material> getUserMaterials() {
+		return userMaterials;
+	}
+
+
+	public void setUserMaterials(Set<Material> userMaterials) {
+		this.userMaterials = userMaterials;
 	}
 
 
@@ -351,6 +385,16 @@ public class User {
 
 	public void setWechat(String wechat) {
 		this.wechat = wechat;
+	}
+
+
+	public Set<Specification> getSpecifications() {
+		return specifications;
+	}
+
+
+	public void setSpecifications(Set<Specification> specifications) {
+		this.specifications = specifications;
 	}
 	
 	

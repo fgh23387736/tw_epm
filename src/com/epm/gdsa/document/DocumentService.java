@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epm.gdsa.proRole.ProRole;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 import com.epm.utils.PublicUtils;
@@ -141,26 +142,44 @@ public class DocumentService {
 	
 
 	public Map<String, Object> getDocumentByIds(String keys,Integer page,Integer pageSize,Integer[] ids) {
-		System.out.println("this 0");
 		DetachedCriteria criteria = documentDao.getCriteriaByIds(ids);
-		System.out.println("this 1");
 		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
-		System.out.println(map.size());
 		return map;
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			Document document, User user2) {
+			Document document, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			Document document2 = documentDao.getById(integer);
-			document2 = getNewDocumentByKeys(document2,document,keys);
 			if(document2 != null){
-				documentDao.update(document2);
+				Project theProject = document2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(theProject.getUser().getUserId().equals(loginUser.getUserId()) || document2.getUser().getUserId().equals(loginUser.getUserId())){
+					//具有权限时的业务逻辑
+					document2 = getNewDocumentByKeys(document2,document,keys);
+					documentDao.update(document2);
+				}else{
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -177,25 +196,43 @@ public class DocumentService {
 	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			Document document2 = documentDao.getById(integer);
 			if(document2 != null){
-				if(PublicUtils.deleteFileFromServer(document2.getContentUrl().replace("/tw_epm", ""))){
-					documentDao.delete(document2);
-				}else{
-					map.put("code", 400);
+				Project theProject = document2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
 					if(theMap == null){
 						theMap = new HashMap<String, Object>();
-						theMap.put("error", "id为"+integer+"的文件删除失败;");
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
 					}else{
-						theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
 					}
-					
+				}else if(theProject.getUser().getUserId().equals(loginUser.getUserId()) || document2.getUser().getUserId().equals(loginUser.getUserId())){
+					//具有权限时的业务逻辑
+					if(PublicUtils.deleteFileFromServer(document2.getContentUrl().replace("/tw_epm", ""))){
+						documentDao.delete(document2);
+					}else{
+						map.put("code", 500);
+						if(theMap == null){
+							theMap = new HashMap<String, Object>();
+							theMap.put("error", "id为"+integer+"的文件删除失败;");
+						}else{
+							theMap.put("error",theMap.get("error")+"id为"+integer+"的文件删除失败;");
+						}	
+					}
+				}else{
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
 				}
-				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");

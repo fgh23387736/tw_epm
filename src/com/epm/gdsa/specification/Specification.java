@@ -43,6 +43,10 @@ public class Specification {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SPECIFICATION_PROJECT")
 	private Project project; 	//单位
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="GDSA_SPECIFICATION_USER")
+	private User user; 	//单位
 
 	public Integer getSpecificationId() {
 		return specificationId;
@@ -82,6 +86,14 @@ public class Specification {
 
 	public void setProject(Project project) {
 		this.project = project;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 	

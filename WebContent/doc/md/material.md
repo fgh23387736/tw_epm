@@ -70,14 +70,12 @@
 				date(String):#日期，
 				price(Float):#价格，
 				type(String):#类型，
-				photo(String):#base64编码，
 				number(Integer):#数量，
 				unit(String):#单位，
 				buyer(Integer):#购入者，
 				checker(Integer):#核实者，
 				submitter(Integer):#报销者，
-				seller(Integer):#销售者，
-				project(Integer):#所属项目
+				seller(Integer):#销售者
 			}	
 		
 			
@@ -143,6 +141,10 @@
 					userId:id
 					name：名称
 				}#销售者，
+				user(Integer):{
+					userId:id
+					name：名称
+				}#上传人，
 				project(Integer):{
 					projectId:项目id
 					name：项目名称

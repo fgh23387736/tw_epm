@@ -1,12 +1,7 @@
 package com.epm.gdsa.log;
 
 import java.util.ArrayList;
-import java.util.Date;
-
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
@@ -15,12 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
-import com.epm.gdsa.document.Document;
 import com.epm.gdsa.log.Log;
 import com.epm.gdsa.log.LogDao;
-import com.epm.gdsa.log.Log;
-import com.epm.gdsa.log.Log;
-import com.epm.utils.HibernateUtils;
 
 @Component(value="logDaoImpl")
 public class LogDaoImpl implements LogDao {

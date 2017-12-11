@@ -84,7 +84,6 @@ public class UserProService {
 				}
 				theMap.put("proRoleId", theproRole.getProRoleId());
 				theMap.put("name", theproRole.getName());
-				theMap.put("auth", theproRole.getAuth());
 				return theMap;
 			case "user":
 				theMap = new HashMap<String, Object>();
@@ -214,8 +213,15 @@ public class UserProService {
 		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
 		return map;
 	}
-
-
+	
+	//直接获取所有的实体
+	public List<UserPro> getByProjectAndUser(Project project,User user) {
+		UserPro userPro = new UserPro();
+		userPro.setProject(project);
+		userPro.setUser(user);
+		DetachedCriteria criteria = userProDao.getCriteriaByProjectAndUser(userPro);
+		return userProDao.getDataByCriteria(null, null, criteria);
+	}
 
 
 }

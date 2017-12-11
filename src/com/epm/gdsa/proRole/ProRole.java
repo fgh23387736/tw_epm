@@ -19,7 +19,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.noticeRole.NoticeRole;
+import com.epm.gdsa.proRoleAuth.ProRoleAuth;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
 import com.epm.gdsa.userPro.UserPro;
@@ -33,9 +35,6 @@ public class ProRole {
 	@SequenceGenerator(name="proRole_sequence",sequenceName="GDSA_USER_PRO_ROLE_SEQUENCE",allocationSize=1)  
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="proRole_sequence") 
 	private Integer proRoleId;
-	
-	@Column(name="GDSA_USER_PRO_ROLE_AUTH")
-	private Integer auth;		//权限
 	
 	@Column(name="GDSA_USER_PRO_ROLE_NAME")
 	private String name;		//名称
@@ -52,6 +51,18 @@ public class ProRole {
 	@JSONField(serialize=false)
 	private Set<NoticeRole> noticeRoles = new HashSet<NoticeRole>();
 	
+	@OneToMany(mappedBy="proRole",fetch=FetchType.LAZY)
+	@JSONField(serialize=false)
+	private Set<ProRoleAuth> proRoleAuths = new HashSet<ProRoleAuth>();
+	
+	public Set<ProRoleAuth> getProRoleAuths() {
+		return proRoleAuths;
+	}
+
+	public void setProRoleAuths(Set<ProRoleAuth> proRoleAuths) {
+		this.proRoleAuths = proRoleAuths;
+	}
+
 	public Set<NoticeRole> getNoticeRoles() {
 		return noticeRoles;
 	}
@@ -74,14 +85,6 @@ public class ProRole {
 
 	public void setUserPros(Set<UserPro> userPros) {
 		this.userPros = userPros;
-	}
-
-	public Integer getAuth() {
-		return auth;
-	}
-
-	public void setAuth(Integer auth) {
-		this.auth = auth;
 	}
 
 	public String getName() {

@@ -109,16 +109,19 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 	
 	public void add(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
+		}else if(loginUser.getType() < 1){
+			responseBean.setStatus(401);
+			responseBean.put("error", "您不具有权限");
 		}else{
-			project.setUser(user2);
+			project.setUser(loginUser);
 			project = projectService.add(project);
 			if(project.getProjectId() != null) {
-				responseBean.setStatus(200);
-				responseBean.put("success", "添加成功");
+				responseBean.setStatus(201);
+				responseBean.put("projectId", project.getProjectId());
 			} else {
 				responseBean.put("error", "添加失败，系统错误");
 				responseBean.setStatus(500);
@@ -138,7 +141,7 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -162,7 +165,7 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(project.getUser().getUserId() == 0 || project.getUser().getUserId() == null){
@@ -184,7 +187,7 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(project.getUser().getUserId() == 0 || project.getUser().getUserId() == null){
@@ -206,7 +209,7 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -226,7 +229,7 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");

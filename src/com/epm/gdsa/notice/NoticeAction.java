@@ -3,6 +3,7 @@ package com.epm.gdsa.notice;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.ServletActionContext;
@@ -11,6 +12,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.enums.ProRoleAuthEnum;
+import com.epm.gdsa.proRole.ProRoleService;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
@@ -32,6 +35,9 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 	
 	@Autowired
 	private UserProService userProService;
+	
+	@Autowired
+	private ProRoleService proRoleService;
 	
 	private String ids;
 	
@@ -55,6 +61,16 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 
 	public void setUserProService(UserProService userProService) {
 		this.userProService = userProService;
+	}
+
+
+	public ProRoleService getProRoleService() {
+		return proRoleService;
+	}
+
+
+	public void setProRoleService(ProRoleService proRoleService) {
+		this.proRoleService = proRoleService;
 	}
 
 
@@ -165,13 +181,13 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 
 	public void getByProject(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(notice.getProject() == null || notice.getProject().getProjectId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
 				Map<String, Object> map = noticeService.getByProject(keys,page,pageSize,notice);
@@ -190,13 +206,13 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 	
 	public void getByProjectAndName(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(notice.getProject() == null || notice.getProject().getProjectId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
 				Map<String, Object> map = noticeService.getByProjectAndName(keys,page,pageSize,notice);
@@ -215,13 +231,13 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 	
 	public void getByUser(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(notice.getUser() == null || notice.getUser().getUserId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "用户不存在");
 			}else{
 				Map<String, Object> map = noticeService.getByUser(keys,page,pageSize,notice);
@@ -242,7 +258,7 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -262,34 +278,48 @@ public class NoticeAction extends ActionSupport implements ModelDriven<Notice>{
 	public void add(){
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		String method = ServletActionContext.getRequest().getMethod();
-		System.out.println(method);
 		if (loginUser == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
-		}else{			
+		}else{
 			Project theProject = projectService.getById(notice.getProject().getProjectId());
 			if(theProject == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
+				boolean isHaveTheAuth = false;
+				List<UserPro> theUserProList = userProService.getByProjectAndUser(theProject,loginUser);
+				if(theUserProList.size() > 0 ){
+					for (UserPro userPro : theUserProList) {
+						if(proRoleService.isHaveTheAuth(userPro.getProRole(), ProRoleAuthEnum.NOTICE)){
+							isHaveTheAuth = true;
+							break;
+						}
+					}
+				}
 				if(loginUser.getUserId() == theProject.getUser().getUserId()){
+					isHaveTheAuth = true;
+				}
+				if(!isHaveTheAuth){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
+				}else{
+					//具有权限时业务逻辑处理部分
 					notice.setUser(loginUser);
 					notice.setDate(new Date());
 					notice = noticeService.add(notice);
 					if(notice.getNoticeId() != null) {
-						responseBean.setStatus(200);
+						responseBean.setStatus(201);
 						responseBean.put("noticeId", notice.getNoticeId());
 					} else {
 						responseBean.put("error", "添加失败，系统错误");
 						responseBean.setStatus(500);
 					}
-				}else{
-					responseBean.setStatus(400);
-					responseBean.put("error", "您未参与该项目，无法签到");
+					
 				}
 			}
 		}
+		
 		try {
 			responseBean.writeTheMap();
 		} catch (IOException e) {

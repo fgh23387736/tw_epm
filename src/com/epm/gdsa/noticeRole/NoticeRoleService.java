@@ -85,7 +85,6 @@ public class NoticeRoleService {
 				}
 				theMap.put("proRoleId", theproRole.getProRoleId());
 				theMap.put("name", theproRole.getName());
-				theMap.put("auth", theproRole.getAuth());
 				return theMap;
 			default:
 				return null;

@@ -401,7 +401,7 @@ to:{
     page:1,#当前页数，（可选，Page和PageSize必须同时存在）
     pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
     project:,#所属项目Id，
-    name:&quot;&quot;#名称，若为空则搜索当前项目下的全部
+    userName:&quot;&quot;#名称，若为空则搜索当前项目下的全部
 }
 
 #若Keys为空则表示搜索下方全部字段
@@ -418,8 +418,7 @@ Keys∈{
     }，#包含人员
     proRole:{
         proRoleId:#角色Id，
-        name：#角色名称，
-        auth:#角色权限
+        name：#角色名称
     }#角色#  #
 }
 

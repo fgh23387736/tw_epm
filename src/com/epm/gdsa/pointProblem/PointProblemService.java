@@ -12,8 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.epm.gdsa.point.Point;
+import com.epm.gdsa.point.PointDao;
 import com.epm.gdsa.pointAnswer.PointAnswer;
+import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
+import com.epm.utils.PublicUtils;
 
 @Transactional
 @Component(value="pointProblemService")
@@ -21,9 +24,20 @@ public class PointProblemService {
 	
 	@Autowired
 	private PointProblemDao pointProblemDao;
+	
+	@Autowired
+	private PointDao pointDao;
 
 	public PointProblemDao getPointProblemDao() {
 		return pointProblemDao;
+	}
+	
+	public PointDao getPointDao() {
+		return pointDao;
+	}
+
+	public void setPointDao(PointDao pointDao) {
+		this.pointDao = pointDao;
 	}
 
 	public void setPointProblemDao(PointProblemDao pointProblemDao) {
@@ -156,17 +170,39 @@ public class PointProblemService {
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			PointProblem pointProblem, User user2) {
+			PointProblem pointProblem, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			PointProblem pointProblem2 = pointProblemDao.getById(integer);
-			pointProblem2 = getNewPointProblemByKeys(pointProblem2,pointProblem,keys);
 			if(pointProblem2 != null){
-				pointProblemDao.update(pointProblem2);
+				Point thePoint = pointDao.getById(pointProblem2.getPoint().getPointId());
+				Project theProject = thePoint.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(theProject.getUser().getUserId().equals(loginUser.getUserId()) || pointProblem2.getUser().getUserId().equals(loginUser.getUserId())){
+					//具有权限时的业务逻辑
+					pointProblem2 = getNewPointProblemByKeys(pointProblem2,pointProblem,keys);
+					pointProblemDao.update(pointProblem2);
+				}else{
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -174,22 +210,44 @@ public class PointProblemService {
 					theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败;");
 				}
 			}
+			
 		}
 		
 		map.put("result", theMap);
 		return map;
 	}
 
-	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User user2) {
+	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			PointProblem pointProblem2 = pointProblemDao.getById(integer);
 			if(pointProblem2 != null){
-				pointProblemDao.delete(pointProblem2);
+				Point thePoint = pointDao.getById(pointProblem2.getPoint().getPointId());
+				Project theProject = thePoint.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(theProject.getUser().getUserId().equals(loginUser.getUserId()) || pointProblem2.getUser().getUserId().equals(loginUser.getUserId())){
+					//具有权限时的业务逻辑
+					pointProblemDao.delete(pointProblem2);
+				}else{
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");

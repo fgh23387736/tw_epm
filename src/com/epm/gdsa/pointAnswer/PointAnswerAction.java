@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.enums.ProRoleAuthEnum;
+import com.epm.gdsa.proRole.ProRoleService;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
@@ -40,6 +42,12 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	@Autowired
 	private UserProService userProService;
 	
+	@Autowired
+	private ProjectService projectService;
+	
+	@Autowired
+	private ProRoleService proRoleService;
+	
 	private String ids;
 	
 	private Integer page;
@@ -58,6 +66,56 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	}
 	
 	
+	public PointService getPointService() {
+		return pointService;
+	}
+
+
+	public void setPointService(PointService pointService) {
+		this.pointService = pointService;
+	}
+
+
+	public PointProblemService getPointProblemService() {
+		return pointProblemService;
+	}
+
+
+	public void setPointProblemService(PointProblemService pointProblemService) {
+		this.pointProblemService = pointProblemService;
+	}
+
+
+	public UserProService getUserProService() {
+		return userProService;
+	}
+
+
+	public void setUserProService(UserProService userProService) {
+		this.userProService = userProService;
+	}
+
+
+	public ProjectService getProjectService() {
+		return projectService;
+	}
+
+
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
+	}
+
+
+	public ProRoleService getProRoleService() {
+		return proRoleService;
+	}
+
+
+	public void setProRoleService(ProRoleService proRoleService) {
+		this.proRoleService = proRoleService;
+	}
+
+
 	public PointAnswerService getPointAnswerService() {
 		return pointAnswerService;
 	}
@@ -127,13 +185,13 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	
 	public void getByPointProblem(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(pointAnswer.getPointProblem() == null || pointAnswer.getPointProblem().getPointProblemId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "问题不存在");
 			}else{
 				Map<String, Object> map = pointAnswerService.getByPointProblem(keys,page,pageSize,pointAnswer);
@@ -154,10 +212,9 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	
 	public void getByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		System.out.println(user2);
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -176,21 +233,37 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	
 	public void add(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			PointProblem thePointProblem = pointProblemService.getById(pointAnswer.getPointProblem().getPointProblemId());
-			if(thePointProblem == null){
-				responseBean.setStatus(400);
-				responseBean.put("error", "问题不存在");
+			Point thePoint =pointService.getById(thePointProblem.getPoint().getPointId());
+			Project theProject = projectService.getById(thePoint.getProject().getProjectId());
+			if(theProject == null){
+				responseBean.setStatus(404);
+				responseBean.put("error", "项目不存在");
 			}else{
-				if(thePointProblem.getPoint().getUser().getUserId() != user2.getUserId()){
-					responseBean.setStatus(400);
-					responseBean.put("error", "您不具有权限回答");
+				boolean isHaveTheAuth = false;
+				List<UserPro> theUserProList = userProService.getByProjectAndUser(theProject,loginUser);
+				if(theUserProList.size() > 0 ){
+					for (UserPro userPro : theUserProList) {
+						if(proRoleService.isHaveTheAuth(userPro.getProRole(), ProRoleAuthEnum.POINT_ANSWER)){
+							isHaveTheAuth = true;
+							break;
+						}
+					}
+				}
+				if(loginUser.getUserId() == theProject.getUser().getUserId()){
+					isHaveTheAuth = true;
+				}
+				if(!isHaveTheAuth){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
 				}else{
-					pointAnswer.setUser(user2);
+					//获得权限时业务逻辑
+					pointAnswer.setUser(loginUser);
 					pointAnswer.setDate(new Date());
 					pointAnswer = pointAnswerService.add(pointAnswer);
 					if(pointAnswer.getPointAnswerId() != null) {
@@ -200,6 +273,7 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 						responseBean.put("error", "添加失败，系统错误");
 						responseBean.setStatus(500);
 					}
+					
 				}
 			}
 		}
@@ -213,13 +287,13 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	
 	public void updateByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
-			Map<String, Object> map = pointAnswerService.updateByIds(keys,idsIntegers,pointAnswer,user2);
+			Map<String, Object> map = pointAnswerService.updateByIds(keys,idsIntegers,pointAnswer,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
 		}
@@ -233,13 +307,13 @@ public class PointAnswerAction extends ActionSupport implements ModelDriven<Poin
 	
 	public void deleteByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
-			responseBean.setStatus(400);
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
-			Map<String, Object> map = pointAnswerService.deleteByIds(idsIntegers,user2);
+			Map<String, Object> map = pointAnswerService.deleteByIds(idsIntegers,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
 		}

@@ -23,7 +23,9 @@ import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.epm.gdsa.document.Document;
+import com.epm.gdsa.learnDoc.LearnDoc;
 import com.epm.gdsa.log.Log;
+import com.epm.gdsa.material.Material;
 import com.epm.gdsa.notice.Notice;
 import com.epm.gdsa.point.Point;
 import com.epm.gdsa.proRole.ProRole;
@@ -104,9 +106,36 @@ public class Project {
 	@JSONField(serialize=false)
 	private Set<ProRole> proRoles = new HashSet<ProRole>();
 	
+	@OneToMany(mappedBy="project",fetch=FetchType.LAZY)
+	@JSONField(serialize=false)
+	private Set<Material> materials = new HashSet<Material>();
 	
+	@OneToMany(mappedBy="project",fetch=FetchType.LAZY)
+	@JSONField(serialize=false)
+	private Set<LearnDoc> learnDocs = new HashSet<LearnDoc>();
+	
+	public Set<Material> getMaterials() {
+		return materials;
+	}
+
+
+	public void setMaterials(Set<Material> materials) {
+		this.materials = materials;
+	}
+
+
 	public Set<ProRole> getProRoles() {
 		return proRoles;
+	}
+
+
+	public Set<LearnDoc> getLearnDocs() {
+		return learnDocs;
+	}
+
+
+	public void setLearnDocs(Set<LearnDoc> learnDocs) {
+		this.learnDocs = learnDocs;
 	}
 
 

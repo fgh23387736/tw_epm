@@ -86,7 +86,6 @@
 				proRole:{
 					proRoleId：，
 					name，
-					auth，
 				}#所属角色，
 			}
 

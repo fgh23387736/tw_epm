@@ -112,8 +112,7 @@
 				}，#包含人员
 				proRole:{
 					proRoleId:#角色Id，
-					name：#角色名称，
-					auth:#角色权限
+					name：#角色名称
 				}#角色#  #
 			}
 

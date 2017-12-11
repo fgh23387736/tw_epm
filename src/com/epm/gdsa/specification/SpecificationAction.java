@@ -3,6 +3,7 @@ package com.epm.gdsa.specification;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.ServletActionContext;
@@ -11,9 +12,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.enums.ProRoleAuthEnum;
+import com.epm.gdsa.proRole.ProRoleService;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
+import com.epm.gdsa.userPro.UserPro;
+import com.epm.gdsa.userPro.UserProService;
 import com.epm.utils.PublicUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
@@ -27,6 +32,12 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 	
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private UserProService userProService;
+	
+	@Autowired
+	private ProRoleService proRoleService;
 	
 	private String ids;
 	
@@ -43,6 +54,26 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 	private String contentFileName;
 	
 	
+	public UserProService getUserProService() {
+		return userProService;
+	}
+
+
+	public void setUserProService(UserProService userProService) {
+		this.userProService = userProService;
+	}
+
+
+	public ProRoleService getProRoleService() {
+		return proRoleService;
+	}
+
+
+	public void setProRoleService(ProRoleService proRoleService) {
+		this.proRoleService = proRoleService;
+	}
+
+
 	public ProjectService getProjectService() {
 		return projectService;
 	}
@@ -152,11 +183,11 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(specification.getProject() == null || specification.getProject().getProjectId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
 				Map<String, Object> map = specificationService.getByProject(keys,page,pageSize,specification);
@@ -177,11 +208,11 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(specification.getProject() == null || specification.getProject().getProjectId() == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
 				
@@ -203,7 +234,7 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -223,21 +254,35 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 	public void add(){
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		String method = ServletActionContext.getRequest().getMethod();
-		System.out.println(method);
 		if (loginUser == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
-		}else{			
+		}else{
 			Project theProject = projectService.getById(specification.getProject().getProjectId());
 			if(theProject == null){
-				responseBean.setStatus(400);
+				responseBean.setStatus(404);
 				responseBean.put("error", "项目不存在");
 			}else{
-				if(loginUser.getUserId() != theProject.getUser().getUserId()){
-					responseBean.setStatus(400);
-					responseBean.put("error", "只有项目发起人有权限上传规范");
+				boolean isHaveTheAuth = false;
+				List<UserPro> theUserProList = userProService.getByProjectAndUser(theProject,loginUser);
+				if(theUserProList.size() > 0 ){
+					for (UserPro userPro : theUserProList) {
+						if(proRoleService.isHaveTheAuth(userPro.getProRole(), ProRoleAuthEnum.SPECIFICATION)){
+							isHaveTheAuth = true;
+							break;
+						}
+					}
+				}
+				if(loginUser.getUserId() == theProject.getUser().getUserId()){
+					isHaveTheAuth = true;
+				}
+				if(!isHaveTheAuth){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
 				}else{
+					
+					//这里写拥有权限之后的业务逻辑
+					specification.setUser(loginUser);
 					String filePathString = PublicUtils.uploadFile(content, contentFileName, "/upload/specification", true);
 					if(filePathString == null){
 						responseBean.put("error", "文件上传失败失败，系统错误");
@@ -245,9 +290,10 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 					}else{
 						specification.setContentUrl(filePathString);
 						specification.setDate(new Date());
+						specification.setUser(loginUser);
 						specification = specificationService.add(specification);
 						if(specification.getSpecificationId() != null) {
-							responseBean.setStatus(200);
+							responseBean.setStatus(201);
 							responseBean.put("specificationId", specification.getSpecificationId());
 						} else {
 							responseBean.put("error", "添加失败，系统错误");
@@ -270,7 +316,7 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
@@ -290,7 +336,7 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {
-			responseBean.setStatus(400);
+			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
