@@ -17,4 +17,5 @@ public interface ProRoleAuthDao {
 	public int getAllCountByCriteria(DetachedCriteria criteria);
 	public DetachedCriteria getCriteriaByIds(Integer[] ids);
 	public DetachedCriteria getCriteriaByProRole(ProRoleAuth proRoleAuth);
+	public DetachedCriteria getCriteriaByProRoleAndAuth(ProRoleAuth proRoleAuth);
 }

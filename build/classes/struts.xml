@@ -21,6 +21,7 @@
 		<action name="noticeRole_*" class="noticeRoleAction" method="{1}"></action>
 		<action name="log_*" class="logAction" method="{1}"></action>
 		<action name="proRoleAuth_*" class="proRoleAuthAction" method="{1}"></action>
+		<action name="adminPublic_*" class="adminPublicAction" method="{1}"></action>
 	</package>
 	
 	<constant name="struts.custom.i18n.resources" value="Mess"></constant>

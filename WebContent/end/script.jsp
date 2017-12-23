@@ -1,5 +1,6 @@
 	<script src="${pageContext.request.contextPath }/end/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="${pageContext.request.contextPath }/end/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="${pageContext.request.contextPath }/end/assets/vendor/bootstrap/js/bootstrapSwitch.js"></script>
 	<script src="${pageContext.request.contextPath }/end/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 	<script src="${pageContext.request.contextPath }/end/assets/scripts/echarts.min.js"></script>
 	<script src="${pageContext.request.contextPath }/end/assets/scripts/klorofil-common.js"></script>

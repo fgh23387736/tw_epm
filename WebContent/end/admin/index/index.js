@@ -1,23 +1,21 @@
 
-
 init();
 function init(){
 	var time=getNowFormatDate();
 	document.getElementById('nowDate').innerHTML=time;
 	layer.load(2);
     $.ajax({
-        url: '/sanhe/src/v1/operation/website.php',
+        url: '/tw_epm/actions/adminPublic_getWebsiteData.action',
         type: 'GET',
         dataType: 'json',
         data: {
-		    Keys:''
         },
         success: function(data) {
-            document.getElementById('GoodsNumber').innerHTML=data.GoodsNumber;
-            document.getElementById('UserNumber').innerHTML=data.AdminNumber;
-            document.getElementById('OrderNubmer').innerHTML=data.VisitorNubmer;
-            document.getElementById('LoginNubmer').innerHTML=data.LoginNubmer;
-            makeCharts(data.VisitorNubmerILSD,data.LoginNubmerILSD);
+            document.getElementById('UserNumber').innerHTML=data.userNumber;
+            document.getElementById('ProjectNumber').innerHTML=data.projectNumber;
+            document.getElementById('FinishedProjectNumber').innerHTML=data.finishedProjectNumber;
+            document.getElementById('AdminNumber').innerHTML=data.adminNumber;
+            makeCharts(data.startProject,data.endProject);
             layer.closeAll('loading');
         },
         error: function(data) {
@@ -66,23 +64,34 @@ function format(format,date)
  return format;
 }
 
-function makeCharts(order,login){
+function makeCharts(startProject,endProject){
+	var theStartProject = [];
+	var theEndProject = [];
+	var theDate = [];
+	for (var i = 0; i < startProject.length; i++) {
+		theDate[i] = startProject[i].date;
+		theStartProject[startProject[i].date] = startProject[i].number;
+	};
+
+	for (var i = 0; i < endProject.length; i++) {
+		theEndProject[endProject[i].date] = endProject[i].number;
+	};
 	var option = {
 		title:{
-			text:'最近一周数据'
+			text:'最近半年数据'
 		},
 		legend:{
 			show:true,
 			data:[
 				{
-					name:'访客数量',
+					name:'发起项目量',
 					textStyle:{
 						color:'#3398DB'
 					}
 					
 				},
 				{
-					name:'访问次数',
+					name:'完成项目量',
 					textStyle:{
 						color:'#41B314'
 					}
@@ -107,7 +116,7 @@ function makeCharts(order,login){
 	    xAxis : [
 	        {
 	            type : 'category',
-	            data : [format("yyyy-MM-dd",new Date(new Date()-24*60*60*1000*6)), format("yyyy-MM-dd",new Date(new Date()-24*60*60*1000*5)), format("yyyy-MM-dd",new Date(new Date()-24*60*60*1000*4)), format("yyyy-MM-dd",new Date(new Date()-24*60*60*1000*3)), format("yyyy-MM-dd",new Date(new Date()-24*60*60*1000*2)), format("yyyy-MM-dd",new Date(new Date()-24*60*60*1000*1)),format("yyyy-MM-dd",new Date())],
+	            data : [],
 	            axisTick: {
 	                alignWithLabel: true
 	            }
@@ -120,21 +129,26 @@ function makeCharts(order,login){
 	    ],
 	    series : [
 	        {
-	            name:'访客数量',
+	            name:'发起项目量',
 	            type:'line',
-	            data:[order[0],order[1],order[2],order[3],order[4],order[5],order[6]]
+	            data:[]
 	        },
 	        {
-	            name:'访问次数',
+	            name:'完成项目量',
 	            itemStyle : {  
                     normal : {  
                         color:'#41B314'  
                     }  
                 }, 
 	            type:'line',
-	            data:[login[0],login[1],login[2],login[3],login[4],login[5],login[6]]
+	            data:[]
 	        }
 	    ]
+	};
+	for (var i = 0; i < theDate.length; i++) {
+		option.xAxis[0].data[i] = theDate[i];
+		option.series[0].data[i] = theStartProject[theDate[i]];
+		option.series[1].data[i] = theEndProject[theDate[i]];
 	};
 	var myChart = echarts.init(document.getElementById('Charts'));
 	myChart.setOption(option);

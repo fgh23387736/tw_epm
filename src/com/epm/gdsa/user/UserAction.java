@@ -141,6 +141,9 @@ public class UserAction extends ActionSupport implements ModelDriven<User>{
 			Map<String, Object> map = userService.updateByIds(keys,idsIntegers,user,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
+			if(idsIntegers[0] == loginUser.getUserId()){
+				ServletActionContext.getRequest().getSession().setAttribute("user", userService.getById(loginUser.getUserId()));
+			}
 		}
 		try {
 			responseBean.writeTheMap();
@@ -152,18 +155,20 @@ public class UserAction extends ActionSupport implements ModelDriven<User>{
 	
 	public void changeNameByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(400);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
 			if(idsIntegers == null || idsIntegers.length == 0){
 				idsIntegers = new Integer[1];
-				idsIntegers[0] = user2.getUserId();
+				idsIntegers[0] = loginUser.getUserId();
 			}
 			userService.updateNameByIds(user,idsIntegers);
-			
+			if(idsIntegers[0] == loginUser.getUserId()){
+				ServletActionContext.getRequest().getSession().setAttribute("user", userService.getById(loginUser.getUserId()));
+			}
 			responseBean.setStatus(200);
 			try {
 				responseBean.writeTheMap();
@@ -190,7 +195,6 @@ public class UserAction extends ActionSupport implements ModelDriven<User>{
 				responseBean.put("error", "原密码错误");
 			}else{
 				user.setPassword(PublicUtils.getMD5(user.getNewPassword()));
-				System.out.println("action");
 				userService.updatePassword(user,user2.getUserId());
 				responseBean.setStatus(200);
 				this.signOut();
@@ -215,11 +219,8 @@ public class UserAction extends ActionSupport implements ModelDriven<User>{
 				if(PublicUtils.getMD5(user.getPassword()).equals(theuser.getPassword())){
 					response.setStatus(200);
 					response.put("success", "登陆成功");
-					ActionContext.getContext().getSession().put("user ",theuser );
 					ServletActionContext.getRequest().getSession().setAttribute("user", theuser);
 				}else{
-					System.out.println(user.getPassword());
-					System.out.println(PublicUtils.getMD5(user.getPassword()));
 					response.put("error", "密码错误");
 					response.setStatus(401);
 				}

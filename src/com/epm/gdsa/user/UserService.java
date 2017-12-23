@@ -139,8 +139,6 @@ public class UserService {
 		System.out.println("service");
 		User user2 = userDao.getById(userId);
 		if(user2 != null){
-			System.out.println(user2.getPassword());
-			System.out.println(user.getPassword());
 			user2.setPassword(user.getPassword());
 			userDao.update(user2);
 		}else{
@@ -211,6 +209,26 @@ public class UserService {
 		}
 		
 		return user;
+	}
+
+	public User getById(Integer userId) {
+		// TODO 自动生成的方法存根
+		return userDao.getById(userId);
+	}
+
+	public int getAllUserNumber() {
+		// TODO 自动生成的方法存根
+		User user = new User();
+		user.setLoginName("");
+		user.setName("");
+		return userDao.getAllCountByCriteria(userDao.getCriteriaByNameAndLoginName(user));
+	}
+
+	public int getAllAdminNumber() {
+		// TODO 自动生成的方法存根
+		User user = new User();
+		user.setType(1);
+		return userDao.getAllCountByCriteria(userDao.getCriteriaByMinType(user));
 	}
 	
 }

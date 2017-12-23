@@ -1,6 +1,7 @@
 package com.epm.gdsa.project;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,6 +264,35 @@ public class ProjectService {
 
 	public Project getById(Integer projectId) {
 		return projectDao.getById(projectId);
+	}
+
+	public Map<String, Object> getProjectByJoinUserAndName(String keys,
+			Integer page, Integer pageSize, Project project) {
+		DetachedCriteria criteria = projectDao.getCriteriaByJoinUserAndName(project);
+		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
+		return map;
+	}
+
+	public int getAllProjectNumber() {
+		// TODO 自动生成的方法存根
+		return projectDao.getAllCountByCriteria(projectDao.getCriteriaByIds(null));
+	}
+
+	public int getAllFinishedProjectNumber() {
+		// TODO 自动生成的方法存根
+		Project project = new Project();
+		project.setEndDateB(null);
+		return projectDao.getAllCountByCriteria(projectDao.getCriteriaByEndDateBNot(project));
+	}
+
+	public int getProjectNumberByStartDateBetween(Date startDate, Date endDate) {
+		// TODO 自动生成的方法存根
+		return projectDao.getAllCountByCriteria(projectDao.getCriteriaByStartDateBetween(startDate,endDate));
+	}
+
+	public int getProjectNumberByEndDateBBetween(Date startDate, Date endDate) {
+		// TODO 自动生成的方法存根
+		return projectDao.getAllCountByCriteria(projectDao.getCriteriaByEndDateBBetween(startDate,endDate));
 	}
 
 

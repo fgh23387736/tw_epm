@@ -37,7 +37,7 @@
 										<span class="icon"><i class="fa fa-users"></i></span>
 										<p>
 											<span class="number" id='UserNumber'>0</span>
-											<span class="title">管理员数</span>
+											<span class="title">注册人数</span>
 										</p>
 									</div>
 								</div>
@@ -45,7 +45,7 @@
 									<div class="metric">
 										<span class="icon"><i class="fa fa-archive"></i></span>
 										<p>
-											<span class="number" id='GoodsNumber'>0</span>
+											<span class="number" id='ProjectNumber'>0</span>
 											<span class="title">项目数量</span>
 										</p>
 									</div>
@@ -55,17 +55,17 @@
 									<div class="metric">
 										<span class="icon"><i class="fa fa-shopping-bag"></i></span>
 										<p>
-											<span class="number" id='OrderNubmer'>0</span>
-											<span class="title">访客数量</span>
+											<span class="number" id='FinishedProjectNumber'>0</span>
+											<span class="title">完成项目数量</span>
 										</p>
 									</div>
 								</div>
 								<div class="col-md-3">
 									<div class="metric">
-										<span class="icon"><i class="fa fa-location-arrow"></i></span>
+										<span class="icon"><i class="fa fa-user-plus"></i></span>
 										<p>
-											<span class="number" id='LoginNubmer'>0</span>
-											<span class="title">访问数量</span>
+											<span class="number" id='AdminNumber'>0</span>
+											<span class="title">高级用户数量</span>
 										</p>
 									</div>
 								</div>
@@ -76,48 +76,6 @@
 						</div>
 					</div>
 					<!-- END OVERVIEW -->
-                    <div class="copyrights">Collect from <a href="http://www.cssmoban.com/" >企业网站模板</a></div>
-					<div class="row">
-						<div class="col-md-6">
-							<!-- RECENT PURCHASES -->
-							
-							<!-- END RECENT PURCHASES -->
-						</div>
-						<div class="col-md-6">
-							<!-- MULTI CHARTS -->
-							
-							<!-- END MULTI CHARTS -->
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-7">
-							<!-- TODO LIST -->
-							
-							<!-- END TODO LIST -->
-						</div>
-						<div class="col-md-5">
-							<!-- TIMELINE -->
-							
-							<!-- END TIMELINE -->
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-4">
-							<!-- TASKS -->
-							
-							<!-- END TASKS -->
-						</div>
-						<div class="col-md-4">
-							<!-- VISIT CHART -->
-							
-							<!-- END VISIT CHART -->
-						</div>
-						<div class="col-md-4">
-							<!-- REALTIME CHART -->
-							
-							<!-- END REALTIME CHART -->
-						</div>
-					</div>
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->

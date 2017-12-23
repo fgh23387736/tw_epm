@@ -1,6 +1,7 @@
 package com.epm.gdsa.proRoleAuth;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.ServletActionContext;
@@ -202,13 +203,19 @@ public class ProRoleAuthAction extends ActionSupport implements ModelDriven<ProR
 					responseBean.setStatus(400);
 					responseBean.put("error", "您不具有权限");
 				}else{
-					proRoleAuth = proRoleAuthService.add(proRoleAuth);
-					if(proRoleAuth.getProRoleAuthId() != null) {
-						responseBean.setStatus(200);
-						responseBean.put("proRoleAuthId", proRoleAuth.getProRoleAuthId());
-					} else {
-						responseBean.put("error", "添加失败，系统错误");
-						responseBean.setStatus(500);
+					List<ProRoleAuth> proRoleAuths = proRoleAuthService.getByProRoleAndAuth(proRoleAuth);
+					if(proRoleAuths.size() > 0){
+						responseBean.put("error", "数据已存在，无法重复添加");
+						responseBean.setStatus(403);
+					}else{
+						proRoleAuth = proRoleAuthService.add(proRoleAuth);
+						if(proRoleAuth.getProRoleAuthId() != null) {
+							responseBean.setStatus(200);
+							responseBean.put("proRoleAuthId", proRoleAuth.getProRoleAuthId());
+						} else {
+							responseBean.put("error", "添加失败，系统错误");
+							responseBean.setStatus(500);
+						}
 					}
 				}
 			}

@@ -12,6 +12,7 @@ import com.epm.beans.ResponseBean;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
+import com.epm.gdsa.user.UserService;
 import com.epm.utils.PublicUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
@@ -22,6 +23,9 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 	
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private UserService userService;
 	
 	private String ids;
 	
@@ -40,6 +44,14 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		return NONE;
 	}
 	
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
 	public ProjectService getProjectService() {
 		return projectService;
 	}
@@ -113,21 +125,24 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 		if (loginUser == null) {
 			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
-		}else if(loginUser.getType() < 1){
-			responseBean.setStatus(401);
-			responseBean.put("error", "您不具有权限");
 		}else{
-			project.setUser(loginUser);
-			project = projectService.add(project);
-			if(project.getProjectId() != null) {
-				responseBean.setStatus(201);
-				responseBean.put("projectId", project.getProjectId());
-			} else {
-				responseBean.put("error", "添加失败，系统错误");
-				responseBean.setStatus(500);
+			loginUser = userService.getById(loginUser.getUserId());
+			if(loginUser.getType() < 1){
+				responseBean.setStatus(401);
+				responseBean.put("error", "您不具有权限");
+			}else{
+				project.setUser(loginUser);
+				project = projectService.add(project);
+				if(project.getProjectId() != null) {
+					responseBean.setStatus(201);
+					responseBean.put("projectId", project.getProjectId());
+				} else {
+					responseBean.put("error", "添加失败，系统错误");
+					responseBean.setStatus(500);
+				}
+				
 			}
-			
-		}
+		} 
 		
 		try {
 			responseBean.write(responseBean.getJsonString());
@@ -172,6 +187,28 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 				project.setUser(user2);
 			}
 			Map<String, Object> map = projectService.getProjectByUserAndName(keys,page,pageSize,project);
+			responseBean.setObjMap(map);
+			
+		}
+		try {
+			responseBean.writeTheMap();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
+	
+	public void getByJoinUserAndName(){
+		ResponseBean responseBean = new ResponseBean();
+		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (user2 == null) {
+			responseBean.setStatus(401);
+			responseBean.put("error", "您还未登录，无权获取本信息");
+		}else{
+			if(project.getUser().getUserId() == 0 || project.getUser().getUserId() == null){
+				project.setUser(user2);
+			}
+			Map<String, Object> map = projectService.getProjectByJoinUserAndName(keys,page,pageSize,project);
 			responseBean.setObjMap(map);
 			
 		}

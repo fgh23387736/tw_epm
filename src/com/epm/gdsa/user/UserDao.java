@@ -18,5 +18,6 @@ public interface UserDao {
 	public DetachedCriteria getCriteriaByIds(Integer[] ids);
 	public DetachedCriteria getCriteriaByLoginName(String loginName);
 	public DetachedCriteria getCriteriaByNameAndLoginName(User user);
+	public DetachedCriteria getCriteriaByMinType(User user);
 	
 }

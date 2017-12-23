@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/end/assets/vendor/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/end/assets/vendor/linearicons/style.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/end/assets/vendor/chartist/css/chartist-custom.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath }/end/assets/vendor/bootstrap/css/bootstrapSwitch.css">
 	<!-- MAIN CSS -->
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/end/assets/css/main.css">
 	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->

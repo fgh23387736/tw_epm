@@ -9,6 +9,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.gdsa.proRole.ProRole;
+import com.epm.gdsa.proRole.ProRoleService;
+import com.epm.gdsa.proRoleAuth.ProRoleAuth;
+import com.epm.gdsa.project.Project;
+import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.userPro.UserPro;
 import com.epm.gdsa.user.User;
 import com.epm.utils.PublicUtils;
@@ -21,6 +26,12 @@ public class UserProAction extends ActionSupport implements ModelDriven<UserPro>
 	
 	@Autowired
 	private UserProService userProService;
+	
+	@Autowired
+	private ProjectService projectService;
+	
+	@Autowired
+	private ProRoleService proRoleService;
 	
 	private String ids;
 	
@@ -36,6 +47,26 @@ public class UserProAction extends ActionSupport implements ModelDriven<UserPro>
 	
 	
 	
+	public ProRoleService getProRoleService() {
+		return proRoleService;
+	}
+
+
+	public void setProRoleService(ProRoleService proRoleService) {
+		this.proRoleService = proRoleService;
+	}
+
+
+	public ProjectService getProjectService() {
+		return projectService;
+	}
+
+
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
+	}
+
+
 	public String getUserName() {
 		return userName;
 	}
@@ -120,18 +151,11 @@ public class UserProAction extends ActionSupport implements ModelDriven<UserPro>
 	public void setUserPro(UserPro userPro) {
 		this.userPro = userPro;
 	}
-
-	public void testUserPro(){
-		String imgStr = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wgARCAAQABEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAG/AB//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAEFAl//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAY/Al//xAAUEAEAAAAAAAAAAAAAAAAAAAAg/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEPPP/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAFBABAAAAAAAAAAAAAAAAAAAAIP/aAAgBAQABPxBf/9k=";
-		String path = "/upload/photo";
-		System.out.println(path);
-		System.out.println(PublicUtils.generateImage(imgStr, path));
-	}
 	
 	public void getByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(400);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
@@ -150,8 +174,8 @@ public class UserProAction extends ActionSupport implements ModelDriven<UserPro>
 	
 	public void getByProjectAndUserName(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(400);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
@@ -174,25 +198,52 @@ public class UserProAction extends ActionSupport implements ModelDriven<UserPro>
 	}
 	
 	public void add(){
-		ResponseBean response =new ResponseBean();
-		Map<String, Object> map = userProService.getByProjectAndUser(keys, page, pageSize, userPro);
-		if((int)map.get("total") != 0){
-			response.put("error", "该人员已存在，无法重复添加");
-			response.setStatus(400);
+		ResponseBean responseBean =new ResponseBean();
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
+			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
-			userPro = userProService.add(userPro);
-			if(userPro.getUserProId() != null) {
-				response.setStatus(200);
-				response.put("success", "添加成功");
-			} else {
-				response.put("error", "添加失败，系统错误");
-				response.setStatus(500);
+			if(userPro.getProject() == null || userPro.getProject().getProjectId() == null){
+				responseBean.setStatus(404);
+				responseBean.put("error", "项目不存在");
+			}else{
+				Project theProject = projectService.getById(userPro.getProject().getProjectId());
+				if(theProject == null){
+					responseBean.setStatus(404);
+					responseBean.put("error", "项目不存在");
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId())){
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不具有权限");
+				}else{
+					Map<String, Object> map = userProService.getByProjectAndUser(keys, page, pageSize, userPro);
+					if((int)map.get("total") != 0){
+						responseBean.put("error", "该人员已存在，无法重复添加");
+						responseBean.setStatus(403);
+					}else{
+						ProRole theProRole = proRoleService.getById(userPro.getProRole().getProRoleId());
+						if(theProRole.getProject().getProjectId().equals(userPro.getProject().getProjectId())){
+							userPro = userProService.add(userPro);
+							if(userPro.getUserProId() != null) {
+								responseBean.setStatus(201);
+								responseBean.put("userProId",userPro.getUserProId());
+							} else {
+								responseBean.put("error", "添加失败，系统错误");
+								responseBean.setStatus(500);
+							}
+						}else{
+							responseBean.put("error", "该角色不属于该项目");
+							responseBean.setStatus(403);
+						}
+						
+					}
+					
+				}
 			}
 		}
 		
-		
 		try {
-			response.write(response.getJsonString());
+			responseBean.write(responseBean.getJsonString());
 		} catch (IOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();

@@ -46,7 +46,7 @@ public class ProRoleService {
 			String[] tempKeys = {
 					"proRoleId",
 					"name",
-					"auth",
+					"auths",
 					"project",
 					"users"
 			};
@@ -66,6 +66,7 @@ public class ProRoleService {
 	
 	public Object getAttributeByString(ProRole proRole,String str){
 		Map<String, Object> theMap;
+		List<Map<String, Object>> list;
 		switch (str) {
 			case "proRoleId":
 				return proRole.getProRoleId();
@@ -78,7 +79,7 @@ public class ProRoleService {
 				theMap.put("name", theProject.getName());
 				return theMap;
 			case "users":
-				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+				list = new ArrayList<Map<String, Object>>();
 				Set<UserPro> userPros = proRole.getUserPros();
 				User tempUser;
 				for (UserPro userPro : userPros) {
@@ -87,6 +88,17 @@ public class ProRoleService {
 					theMap.put("userId", tempUser.getUserId());
 					theMap.put("name", tempUser.getName());
 					theMap.put("tel", tempUser.getTel());
+					list.add(theMap);
+				}
+				return list;
+			case "auths":
+				list = new ArrayList<Map<String, Object>>();
+				Set<ProRoleAuth> proRoleAuths = proRole.getProRoleAuths();
+				for (ProRoleAuth proRoleAuth : proRoleAuths) {
+					theMap = new HashMap<String, Object>();
+					theMap.put("proRoleAuthId", proRoleAuth.getProRoleAuthId());
+					theMap.put("name", proRoleAuth.getAuth().getName());
+					theMap.put("describe", proRoleAuth.getAuth().getDescribe());
 					list.add(theMap);
 				}
 				return list;

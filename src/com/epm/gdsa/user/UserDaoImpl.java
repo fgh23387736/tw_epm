@@ -94,6 +94,13 @@ public class UserDaoImpl implements UserDao {
 		return criteria;
 	}
 
+	@Override
+	public DetachedCriteria getCriteriaByMinType(User user) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(User.class);
+		criteria.add(Property.forName("type").ge(user.getType()));
+		return criteria;
+	}
+
 	
 	
 	

@@ -116,6 +116,43 @@ public class ProjectDaoImpl implements ProjectDao {
 		return criteria;
 	}
 
+	@Override
+	public DetachedCriteria getCriteriaByJoinUserAndName(Project project) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Project.class);
+		DetachedCriteria subCriteria = DetachedCriteria.forClass(UserPro.class);
+		subCriteria.setProjection(Projections.projectionList().add(Projections.property("project"),"project"));
+		subCriteria.add(Property.forName("user").eq(project.getUser()));
+		 
+		criteria.add(Property.forName("projectId").in(subCriteria));
+		criteria.add(Property.forName("name").like("%"+project.getName()+"%"));
+		
+		return criteria;
+	}
+
+	@Override
+	public DetachedCriteria getCriteriaByEndDateBNot(Project project) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Project.class);
+		criteria.add(Property.forName("endDateB").neOrIsNotNull(project.getEndDateB()));
+		
+		return criteria;
+	}
+
+	@Override
+	public DetachedCriteria getCriteriaByStartDateBetween(Date startDate,
+			Date endDate) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Project.class);
+		criteria.add(Property.forName("startDate").between(startDate, endDate));
+		return criteria;
+	}
+
+	@Override
+	public DetachedCriteria getCriteriaByEndDateBBetween(Date startDate,
+			Date endDate) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Project.class);
+		criteria.add(Property.forName("endDateB").between(startDate, endDate));
+		return criteria;
+	}
+
 
 	
 }

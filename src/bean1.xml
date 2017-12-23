@@ -16,7 +16,7 @@
 	<!-- 开启注解扫描 
 		(1)到包里面扫描类、方法、属性上面是否有注解
 	-->
-	<context:component-scan base-package="com.epm.gdsa"></context:component-scan>
+	<context:component-scan base-package="com.epm.gdsa,com.epm.actions"></context:component-scan>
 	
 	<!-- 配置c3p0连接池 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">

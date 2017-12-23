@@ -29,7 +29,7 @@
 		NOTICE:发布公告
 		WORKSITE_RECORD:提交现场记录
 		POINT:创建项目进度节点
-		LOG:上传日志<权限验证已修改完成>
+		LOG:上传日志
 		MATERIAL:上传项目材料记录
 		LEARN_DOC:上传学习资料
 		POINT_PROBLEM:针对节点提问
@@ -40,7 +40,7 @@
 	注意：所有公告只能发布，和删除，无法修改
 
 
-
+#通用接口
 
 ##### 1. [项目](project.html)<已完成>
 ##### 2. [用户](user.html)<已完成>
@@ -60,3 +60,7 @@
 ##### 16. [节点问题回答](pointAnswer.html)<已完成>
 ##### 17. [项目角色权限](proRoleAuth.html)<已完成>
 
+
+#专门页面接口
+
+##### 1. [管理员首页](adminIndex.html)<已完成>

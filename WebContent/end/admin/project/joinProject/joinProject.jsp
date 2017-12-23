@@ -8,7 +8,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<jsp:include   page="/end/link.jsp" flush="true"/>
-	<link rel="stylesheet" type="text/css" href="project.css">
+	<link rel="stylesheet" type="text/css" href="joinProject.css">
 </head>
 
 <body>
@@ -54,9 +54,8 @@
 					</div>
 					<div class="panel">
 						<div class="panel-heading">
-							<h3 class="panel-title">编辑项目基本信息</h3>
+							<h3 class="panel-title">项目基本信息</h3>
 							<div class="right">
-								<div type="button" class="btn btn-primary"  onclick="saveProject()">保存</div>
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
@@ -68,34 +67,34 @@
 										<td>名称</td>
 										<td>
 											<input type="text" class="form-control" id="theProjectName"
-									   placeholder="名称" >
+									   placeholder="名称" disabled="disabled">
 										</td>
 									</tr>
 									<tr>
 										<td>开始时间</td>
 										<td id="">
 											<input type="text" class="form-control" id="theProjectStartDate"
-									   placeholder="开始时间" >
+									   placeholder="开始时间" disabled="disabled">
 										</td>
 									</tr>
 									<tr>
 										<td>预计结束时间</td>
 										<td id="">
 											<input type="text" class="form-control" id="theProjectEndDateA"
-									   placeholder="预计结束时间" >
+									   placeholder="预计结束时间" disabled="disabled">
 										</td>
 									</tr>
 									<tr>
 										<td>实际结束时间</td>
 										<td id="">
 											<input type="text" class="form-control" id="theProjectEndDateB"
-									   placeholder="实际结束时间" >
+									   placeholder="实际结束时间" disabled="disabled">
 										</td>
 									</tr>
 									<tr>
 										<td>内容</td>
 										<td id="">
-											<textarea class="form-control" placeholder="" rows="4" id="theProjectContent"></textarea>
+											<textarea class="form-control" placeholder="" rows="4" id="theProjectContent" disabled="disabled"></textarea>
 										</td>
 									</tr>
 								</tbody>
@@ -113,7 +112,6 @@
 									</div>
 									<div type="button" class="btn btn-primary"  onclick="searchRole()">搜索</div>
 									<div type="button" class="btn btn-primary"  onclick="searchAllRole()">查看全部</div>
-									<div type="button" class="btn btn-success"  onclick="addRole()">增加</div>
 								</form>
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
@@ -126,7 +124,7 @@
 											<input type="checkbox" id="pageList_Word_selectAll">
 											</th> -->
 											<th>名称</th>
-											<th>操作</th> 
+											<th>操作</th>
 								</thead>
 								<tbody id="pageList_Role_tbody">
 								</tbody>
@@ -148,7 +146,6 @@
 									</div>
 									<div type="button" class="btn btn-primary"  onclick="searchUser()">搜索</div>
 									<div type="button" class="btn btn-primary"  onclick="searchAllUser()">查看全部</div>
-									<div type="button" class="btn btn-success"  onclick="addUser()">增加</div>
 								</form>
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
@@ -164,7 +161,6 @@
 											<th>名称</th>
 											<th>手机</th>
 											<th>角色</th>
-											<th>操作</th>
 								</thead>
 								<tbody id="pageList_User_tbody">
 								</tbody>
@@ -266,13 +262,6 @@
 		<jsp:include   page="/end/footer.jsp" flush="true"/>
 	</div>
 	<!-- END WRAPPER -->
-	
-	<div id="roleBox">
-		<div class="form-group">
-			<input type="text" class="form-control" id="roleBoxName"
-				   placeholder="名称" >
-		</div>
-	</div>
 
 	<div id="userBox">
 		<div class="input-group">
@@ -370,13 +359,13 @@
 					<td>管理项目资料</td>
 					<td>
 						<div class="switch" id="checkbox_DOCUMENT" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'DOCUMENT')"/>
+						    <input type="checkbox"   disabled/>
 						</div>
 					</td>
 					<td>管理项目规范</td>
 					<td>
 						<div class="switch" id="checkbox_SPECIFICATION" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'SPECIFICATION')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 				</tr>
@@ -384,13 +373,13 @@
 					<td>管理公告</td>
 					<td>
 						<div class="switch" id="checkbox_NOTICE" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'NOTICE')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 					<td>管理现场记录</td>
 					<td>
 						<div class="switch" id="checkbox_WORKSITE_RECORD" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'WORKSITE_RECORD')"/>
+						    <input type="checkbox" disabled/>
 						</div>
 					</td>
 				</tr>
@@ -398,13 +387,13 @@
 					<td>管理项目节点</td>
 					<td>
 						<div class="switch" id="checkbox_POINT" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'POINT')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 					<td>管理项目日志</td>
 					<td>
 						<div class="switch" id="checkbox_LOG" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'LOG')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 				</tr>
@@ -412,13 +401,13 @@
 					<td>管理项目材料</td>
 					<td>
 						<div class="switch" id="checkbox_MATERIAL" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'MATERIAL')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 					<td>管理学习资料</td>
 					<td>
 						<div class="switch" id="checkbox_LEARN_DOC" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'LEARN_DOC')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 				</tr>
@@ -426,13 +415,13 @@
 					<td>对节点提问</td>
 					<td>
 						<div class="switch" id="checkbox_POINT_PROBLEM" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'POINT_PROBLEM')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 					<td>回答节点问题</td>
 					<td>
 						<div class="switch" id="checkbox_POINT_ANSWER" data-animated="false" data-on="success" data-off="danger"  style="z-index:999999;">
-						    <input type="checkbox"  onchange="configureAuth($(this),'POINT_ANSWER')"/>
+						    <input type="checkbox"  disabled/>
 						</div>
 					</td>
 				</tr>
@@ -445,7 +434,7 @@
 	<script src="${pageContext.request.contextPath }/statics/js/laydate/laydate.js"></script>
 	<jsp:include   page="/end/script.jsp" flush="true"/>
 	
-	<script type="text/javascript" src="project.js"></script>
+	<script type="text/javascript" src="joinProject.js"></script>
 	
 </body>
 </html>

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.point.Point;
 import com.epm.gdsa.proRole.ProRole;
 import com.epm.gdsa.proRoleAuth.ProRoleAuth;
@@ -223,7 +224,14 @@ public class ProRoleAuthService {
 		DetachedCriteria criteria = proRoleAuthDao.getCriteriaByProRole(proRoleAuth);
 		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
 		return map;
-	}	
+	}
+
+	public List<ProRoleAuth> getByProRoleAndAuth(ProRoleAuth proRoleAuth) {
+		DetachedCriteria criteria = proRoleAuthDao.getCriteriaByProRoleAndAuth(proRoleAuth);
+		return proRoleAuthDao.getDataByCriteria(null, null, criteria);
+	}
+
+
 	
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>index</title>
+<title>adminIndex</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <style type="text/css">
 /* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
@@ -291,67 +291,53 @@ img {
 </style>
 </head>
 <body>
-<h2>一些公共api</h2>
-<blockquote>
-<p>不采用标准RESTful</p>
-<p><label id="CD" />restful 状态码</p>
-<pre><code>200 OK - [GET]：服务器成功返回用户请求的数据，该操作是幂等的（Idempotent）。
-201 CREATED - [POST/PUT/PATCH]：用户新建或修改数据成功。
-202 Accepted - [*]：表示一个请求已经进入后台排队（异步任务）
-204 NO CONTENT - [DELETE]：用户删除数据成功。
-400 INVALID REQUEST - [POST/PUT/PATCH]：用户发出的请求有错误，服务器没有进行新建或修改数据的操作，该操作是幂等的。
-401 Unauthorized - [*]：表示用户没有权限（令牌、用户名、密码错误）。
-403 Forbidden - [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。
-404 NOT FOUND - [*]：用户发出的请求针对的是不存在的记录，服务器没有进行操作，该操作是幂等的。
-406 Not Acceptable - [GET]：用户请求的格式不可得（比如用户请求JSON格式，但是只有XML格式）。
-410 Gone -[GET]：用户请求的资源被永久删除，且不会再得到的。
-422 Unprocesable entity - [POST/PUT/PATCH] 当创建一个对象时，发生一个验证错误。
-500 INTERNAL SERVER ERROR - [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
+<ul>
+<li>
+<p><a name="">站点数据模块</a>  
+</p>
+<pre><code>    #根据Id搜索
+    POST /tw_epm/actions/adminPublic_getWebsiteData.action
+    to:{
+
+    }
+
+    #正确返回时状态码为200
+    return{
+        userNumber(int):#注册人数
+        projectNumber(int):#项目数量
+        finishedProjectNumber(int):#完成项目数量
+        adminNumber(int):#管理员数量（用户权限大于0的）
+        startProject(arr,json):[
+            {
+                date:#日期，年-月，
+                number:#数量
+            }
+        ]#过去6个月每个月开始了多少项目
+        endProject(arr,json):[
+            {
+                date:#日期，年-月，
+                number:#数量
+            }
+        ]#过去6个月每个月结束了多少项目
+
+    }
+
+    错误时除返回码还要返回错误信息
+    return{
+        error:'错误信息'
+    }
+
+    错误码：
+        401 Unauthorized - [*]：表示用户没有权限（令牌、用户名、密码错误）。
+        403 Forbidden - [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。
+        404 NOT FOUND - [*]：用户发出的请求针对的是不存在的记录，服务器没有进行操作，该操作是幂等的。
+        406 Not Acceptable - [GET]：用户请求的格式不可得（比如用户请求JSON格式，但是只有XML格式）。
+        410 Gone -[GET]：用户请求的资源被永久删除，且不会再得到的。
+        500 INTERNAL SERVER ERROR - [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
 </code></pre>
 
-<p><label id="auth" /> 用户权限分配</p>
-<pre><code>用户账号权限：
-    0：普通用户，不具有任何高级权限
-    1：项目经理，有权发布项目，对项目进行操作，但只能操作自己的项目
-    2：总经理，可以任命项目经理，给普通用户提升权限，可以查看修改所有项目
-项目角色权限
-    DOCUMENT:处理项目资料
-    SPECIFICATION:处理项目规范
-    NOTICE:发布公告
-    WORKSITE_RECORD:提交现场记录
-    POINT:创建项目进度节点
-    LOG:上传日志
-    MATERIAL:上传项目材料记录
-    LEARN_DOC:上传学习资料
-    POINT_PROBLEM:针对节点提问
-    POINT_ANSWER:回答节点问题
-    *:项目经理(项目发起人),拥有所有权限
-</code></pre>
-
-</blockquote>
-<pre><code>注意：所有公告只能发布，和删除，无法修改
-</code></pre>
-
-<h1>通用接口</h1>
-<h5>1. <a href="project.html">项目</a><已完成></h5>
-<h5>2. <a href="user.html">用户</a><已完成></h5>
-<h5>3. <a href="document.html">项目资料</a><已完成></h5>
-<h5>4. <a href="specification.html">规范</a><已完成></h5>
-<h5>5. <a href="sign.html">签到</a><已完成></h5>
-<h5>6. <a href="notice.html">公告</a><已完成></h5>
-<h5>7. <a href="noticeRole.html">公告接受角色</a><已完成></h5>
-<h5>8. <a href="worksiteRecord.html">现场记录</a><已完成></h5>
-<h5>9. <a href="point.html">进度节点</a><已完成></h5>
-<h5>10. <a href="log.html">日志</a><已完成></h5>
-<h5>11. <a href="material.html">材料表</a><已完成></h5>
-<h5>12. <a href="learnDoc.html">学习资料表</a><已完成></h5>
-<h5>13. <a href="userPro.html">用户项目</a><已完成></h5>
-<h5>14. <a href="proRole.html">项目角色</a><已完成></h5>
-<h5>15. <a href="pointProblem.html">节点问题</a><已完成></h5>
-<h5>16. <a href="pointAnswer.html">节点问题回答</a><已完成></h5>
-<h5>17. <a href="proRoleAuth.html">项目角色权限</a><已完成></h5>
-<h1>专门页面接口</h1>
-<h5>1. <a href="adminIndex.html">管理员首页</a><已完成></h5>
+</li>
+</ul>
 
 </body>
 </html>

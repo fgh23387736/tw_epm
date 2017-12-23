@@ -96,6 +96,14 @@ public class ProRoleAuthDaoImpl implements ProRoleAuthDao {
 		return criteria;
 	}
 
+	@Override
+	public DetachedCriteria getCriteriaByProRoleAndAuth(ProRoleAuth proRoleAuth) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(ProRoleAuth.class);
+		criteria.add(Property.forName("proRole").eq(proRoleAuth.getProRole()));
+		criteria.add(Property.forName("auth").eq(proRoleAuth.getAuth()));
+		return criteria;
+	}
+
 
 	
 }

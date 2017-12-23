@@ -151,17 +151,38 @@ public class UserProService {
 	}
 
 	public Map<String, Object> updateByIds(String keys, Integer[] idsIntegers,
-			UserPro userPro, User user2) {
+			UserPro userPro, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			UserPro userPro2 = userProDao.getById(integer);
-			userPro2 = getNewUserProByKeys(userPro2,userPro,keys);
+			
 			if(userPro2 != null){
-				userProDao.update(userPro2);
+				Project theProject = userPro2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					userPro2 = getNewUserProByKeys(userPro2,userPro,keys);
+					userProDao.update(userPro2);
+				}
+				
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据修改失败;");
@@ -175,16 +196,35 @@ public class UserProService {
 		return map;
 	}
 
-	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User user2) {
+	public Map<String, Object> deleteByIds(Integer[] idsIntegers, User loginUser) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, Object> theMap = null;
-		map.put("code", 200);
+		map.put("code", 201);
 		for (Integer integer : idsIntegers) {
 			UserPro userPro2 = userProDao.getById(integer);
 			if(userPro2 != null){
-				userProDao.delete(userPro2);
+				Project theProject = userPro2.getProject();
+				if(theProject == null){
+					map.put("code", 404);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:项目不存在;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:项目不存在;");
+					}
+				}else if(!theProject.getUser().getUserId().equals(loginUser.getUserId())){
+					map.put("code", 401);
+					if(theMap == null){
+						theMap = new HashMap<String, Object>();
+						theMap.put("error", "id为"+integer+"的数据修改失败:您不具有权限;");
+					}else{
+						theMap.put("error",theMap.get("error")+"id为"+integer+"的数据修改失败:您不具有权限;");
+					}
+				}else{
+					userProDao.delete(userPro2);
+				}
 			}else{
-				map.put("code", 400);
+				map.put("code", 404);
 				if(theMap == null){
 					theMap = new HashMap<String, Object>();
 					theMap.put("error", "id为"+integer+"的数据删除失败：数据不存在;");

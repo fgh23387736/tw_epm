@@ -7,21 +7,6 @@ var pageListmanageChoseUser=new MyPage();
 var myChart = echarts.init(document.getElementById('projectChart'));
 var option;
 laydate({
-  	elem: '#theProjectStartDate', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
-	format: 'YYYY-MM-DD hh:mm:ss',
-	istime: true //是否开启时间选择
-});
-laydate({
-  	elem: '#theProjectEndDateA', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
-	format: 'YYYY-MM-DD hh:mm:ss',
-	istime: true //是否开启时间选择
-});
-laydate({
-  	elem: '#theProjectEndDateB', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
-	format: 'YYYY-MM-DD hh:mm:ss',
-	istime: true //是否开启时间选择
-});
-laydate({
     elem: '#pointBoxDate', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
     format: 'YYYY-MM-DD hh:mm:ss',
     istime: true //是否开启时间选择
@@ -96,36 +81,6 @@ function initProject(id){
     });
 }
 
-function saveProject(){
-	layer.load(2);
-    $.ajax({
-        url: "/tw_epm/actions/project_updateByIds.action",
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            keys:"name+content+startDate+endDateA+endDateB",
-			ids:id,
-			name:$("#theProjectName").val(),
-			content:$("#theProjectContent").val(),
-			startDate:$("#theProjectStartDate").val(),
-			endDateA:$("#theProjectEndDateA").val(),
-			endDateB:$("#theProjectEndDateB").val()
-        },
-        success: function(data) {
-            layer.closeAll('loading');
-        	layer.msg("保存成功", {
-                icon: 6
-            });  
-        },
-        error: function(data) {
-            layer.closeAll('loading');
-            layer.msg(JSON.parse(data.responseText).error, {
-                icon: 5
-            });
-        }
-    });
-}
-
 function initRole(id){
 	pageListmanageRole.init({
 		requesturl:"/tw_epm/actions/proRole_getByProjectAndName.action",//向后台请求数据路径
@@ -146,7 +101,7 @@ function initRole(id){
 				var allstr="";
 				allstr="<tr>"
 				+"</td><td>"+this.checkTypedof(data.name)
-				+"</td><td>"+"<button type='button' class='btn btn-warning  btn-sm' onclick='editRole(\""+data.name+"\","+data.proRoleId+")'>编辑</button>\n<button type='button' class='btn btn-danger  btn-sm' onclick='deleteRole("+data.proRoleId+")'>删除</button>\n<button type='button' class='btn btn-primary  btn-sm' onclick='configureRoleAuth(\""+data.name+"\","+data.proRoleId+")'>配置权限</button>"
+				+"</td><td>"+"<button type='button' class='btn btn-primary  btn-sm' onclick='configureRoleAuth(\""+data.name+"\","+data.proRoleId+")'>查看权限</button>"
 				+"</td></tr>";
 				return allstr;
 		},
@@ -169,127 +124,6 @@ function searchAllRole(){
 	searchRole();
 }
 
-function deleteRole(id){
-	layer.msg('删除后不可恢复，您确定删除吗？', {
-        time: 0 //不自动关闭
-        ,
-        btn: ['删除', '取消'],
-        yes: function(index) {
-            layer.close(index);
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/proRole_deleteByIds.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    ids:id
-                },
-                success: function(data) {
-                    layer.msg('删除成功', {
-                        icon: 6
-                    });
-                    pageListmanageRole.searchAll();
-                    layer.closeAll('loading');
-                    searchAllRoleForUser();
-                },
-                error: function(data) {
-                    pageListmanageRole.searchAll();
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-        }
-    });
-}
-
-function editRole(name,id,auth){
-	$("#roleBoxName").val(name);
-	layer.open({
-	  type: 1,
-	  shade: false,
-	  title: "编辑角色", //不显示标题
-	  content: $('#roleBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
-	  btn:["保存"],
-	  cancel: function(){
-	    
-	  },
-	  btn1:function(index){
-	  	layer.close(index);
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/proRole_updateByIds.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    ids:id,
-                    keys:"name+auth",
-                    name:$("#roleBoxName").val()
-                },
-                success: function(data) {
-                    layer.msg('修改成功', {
-                        icon: 6
-                    });
-                    pageListmanageRole.searchAll();
-                    layer.closeAll('loading');
-                    searchAllRoleForUser();
-                },
-                error: function(data) {
-                    pageListmanageRole.searchAll();
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-	  }
-	});
-}
-
-function addRole(){
-    $("#roleBoxName").val("");
-    layer.open({
-      type: 1,
-      shade: false,
-      title: "增加角色", //不显示标题
-      content: $('#roleBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
-      btn:["保存"],
-      cancel: function(){
-        
-      },
-      btn1:function(index){
-        layer.close(index);
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/proRole_add.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    name:$("#roleBoxName").val(),
-                    project:id
-                },
-                success: function(data) {
-                    layer.msg('增加成功', {
-                        icon: 6
-                    });
-                    pageListmanageRole.searchAll();
-                    layer.closeAll('loading');
-                    searchAllRoleForUser();
-                },
-                error: function(data) {
-                    pageListmanageRole.searchAll();
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-      }
-    });
-}
-
-
 
 function initUser(id){
     pageListmanageUser.init({
@@ -308,29 +142,12 @@ function initUser(id){
         but_num:20,//分页条按钮每组最多显示多少页
         beginsearch:true,//是否在初始化时填充数据
         drawDatatoCotent:function (data){
-                switch(data.proRole.auth){
-                    case 0:
-                        data.proRole.theauth = "项目临时人员";
-                        break;
-                    case 1:
-                        data.proRole.theauth = "项目工作人员";
-                        break;
-                    case 2:
-                        data.proRole.theauth = "现场负责人";
-                        break;
-                    case 3:
-                        data.proRole.theauth = "项目经理";
-                        break;
-                    default:
-                        data.proRole.theauth = "无效权限";
-                }
                 var allstr="";
                 allstr="<tr>"
                 +"</td><td>"+this.checkTypedof(data.user.userId)
                 +"</td><td>"+this.checkTypedof(data.user.name)
                 +"</td><td>"+this.checkTypedof(data.user.tel)
                 +"</td><td>"+this.checkTypedof(data.proRole.name)
-                +"</td><td>"+"<button type='button' class='btn btn-warning  btn-sm' onclick='editUser("+data.user.userId+","+data.userProId+","+data.proRole.proRoleId+")'>编辑</button>\n<button type='button' class='btn btn-danger  btn-sm' onclick='deleteUser("+data.proRoleId+")'>删除</button>"
                 +"</td></tr>";
                 return allstr;
         },
@@ -351,126 +168,6 @@ function searchUser(){
 function searchAllUser(){
     $("#userName").val("");
     searchUser();
-}
-
-function deleteUser(id){
-    layer.msg('删除后不可恢复，您确定删除吗？', {
-        time: 0 //不自动关闭
-        ,
-        btn: ['删除', '取消'],
-        yes: function(index) {
-            layer.close(index);
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/userPro_deleteByIds.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    ids:id
-                },
-                success: function(data) {
-                    layer.msg('删除成功', {
-                        icon: 6
-                    });
-                    pageListmanageUser.searchAll();
-                    layer.closeAll('loading');
-                },
-                error: function(data) {
-                    pageListmanageUser.searchAll();
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-        }
-    });
-}
-
-function editUser(userId,id,proRole){
-    $("#userBoxUser").val(userId);
-    $("#userBoxProRole").val(proRole);
-    layer.open({
-      type: 1,
-      shade: false,
-      title: "编辑人员", //不显示标题
-      content: $('#userBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
-      btn:["保存"],
-      cancel: function(){
-        
-      },
-      btn1:function(index){
-        layer.close(index);
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/userPro_updateByIds.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    ids:id,
-                    keys:"proRole",
-                    proRole:$("#userBoxProRole").val()
-                },
-                success: function(data) {
-                    layer.msg('修改成功', {
-                        icon: 6
-                    });
-                    pageListmanageUser.searchAll();
-                    layer.closeAll('loading');
-                },
-                error: function(data) {
-                    pageListmanageUser.searchAll();
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-      }
-    });
-}
-
-function addUser(){
-    $("#userBoxUser").val("");
-    $("#userBoxProRole").val(0);
-    layer.open({
-      type: 1,
-      shade: false,
-      title: "增加人员", //不显示标题
-      content: $('#userBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
-      btn:["保存"],
-      cancel: function(){
-        
-      },
-      btn1:function(index){
-        layer.close(index);
-        layer.load(2);
-        $.ajax({
-            url: "/tw_epm/actions/userPro_add.action",
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                user:$("#userBoxUser").val(),
-                proRole:$("#userBoxProRole").val(),
-                project:id
-            },
-            success: function(data) {
-                layer.msg('修改成功', {
-                    icon: 6
-                });
-                pageListmanageUser.searchAll();
-                layer.closeAll('loading');
-            },
-            error: function(data) {
-                pageListmanageUser.searchAll();
-                layer.closeAll('loading');
-                layer.msg(JSON.parse(data.responseText).error, {
-                    icon: 5
-                });
-            }
-        });
-      }
-    });
 }
 
 function searchAllRoleForUser(){
@@ -825,7 +522,7 @@ function configureRoleAuth(name,proRoleId){
             nowProRoleAuthBox = layer.open({
               type: 1,
               shade: false,
-              title: name+"-配置权限", //不显示标题
+              title: name+"-拥有权限", //不显示标题
               content: $('#proRoleAuthBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
               maxWidth:2000,
               cancel: function(){
@@ -842,58 +539,4 @@ function configureRoleAuth(name,proRoleId){
             });
         }
     });
-}
-
-function configureAuth(checkBox,auth){
-    console.log(checkBox[0].checked);
-    console.log("auth:"+auth);
-    if($("#theProRoleId").val() != 0){
-        if(checkBox[0].checked){
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/proRoleAuth_add.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    auth:auth,
-                    proRole:$("#theProRoleId").val()
-                },
-                success: function(data) {
-                    layer.msg('修改成功', {
-                        icon: 6
-                    });
-                    layer.closeAll('loading');
-                },
-                error: function(data) {
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-        }else{
-            layer.load(2);
-            $.ajax({
-                url: "/tw_epm/actions/proRoleAuth_deleteByIds.action",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    ids:$("#checkbox_"+auth).attr('title')
-                },
-                success: function(data) {
-                    layer.msg('修改成功', {
-                        icon: 6
-                    });
-                    layer.closeAll('loading');
-                },
-                error: function(data) {
-                    layer.closeAll('loading');
-                    layer.msg(JSON.parse(data.responseText).error, {
-                        icon: 5
-                    });
-                }
-            });
-        }
-    }
-    
 }
