@@ -334,7 +334,7 @@ function initUser(id){
                 +"</td><td>"+this.checkTypedof(data.user.name)
                 +"</td><td>"+this.checkTypedof(data.user.tel)
                 +"</td><td>"+this.checkTypedof(data.proRole.name)
-                +"</td><td>"+"<button type='button' class='btn btn-warning  btn-sm' onclick='editUser("+data.user.userId+","+data.userProId+","+data.proRole.proRoleId+")'>编辑</button>\n<button type='button' class='btn btn-danger  btn-sm' onclick='deleteUser("+data.proRoleId+")'>删除</button>"
+                +"</td><td>"+"<button type='button' class='btn btn-warning  btn-sm' onclick='editUser("+data.user.userId+","+data.userProId+","+data.proRole.proRoleId+")'>编辑</button>\n<button type='button' class='btn btn-danger  btn-sm' onclick='deleteUser("+data.userProId+")'>删除</button>"
                 +"</td></tr>";
                 return allstr;
         },
