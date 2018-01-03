@@ -43,7 +43,7 @@
 									</label>
 								</div> -->
 								<div class="btn btn-primary btn-lg btn-block" onclick="submitTest()">登录</div>
-								<div class="btn btn-warning btn-lg btn-block" onclick="window.location = '../register/register.jsp';">注册</div>
+								<div class="btn btn-warning btn-lg btn-block" onclick="window.location = '/tw_epm/end/register/register.jsp';">注册</div>
 								
 							</form>
 						</div>

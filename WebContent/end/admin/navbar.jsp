@@ -8,7 +8,7 @@
 </c:if>
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="brand" style="padding:20px 30px;">
-				<a href="/sanhe/webContent/index.html"><img src="/tw_epm/end/assets/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo" style="height:40px;"></a>
+				<a href="/tw_epm/end/admin/index/index.jsp"><img src="/tw_epm/end/assets/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo" style="height:40px;"></a>
 			</div>
 			<div class="container-fluid">
 				<div class="navbar-btn">
@@ -36,15 +36,13 @@
 						<li class="dropdown">
 							<a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-arrows"></i> <span>其他操作</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
-								<li><a href="/sanhe/webContent/index.html">回到主页</a></li>
+								<li><a href="/tw_epm/end/admin/index/index.jsp">回到主页</a></li>
 							</ul>
 						</li>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><!-- <img src="<?php echo $rs['HeadImgUrl'];?>" class="img-circle" alt="Avatar"> --> <span>${user.name}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
-								<li><a href="/sanhe/webContent/end/admin/personalInformation/personalInformation.php"><i class="lnr lnr-user"></i> <span>个人主页</span></a></li>
-								<!-- <li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
-								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li> -->
+								<li><a href="/tw_epm/end/admin/personalInformation/personalInformation.jsp"><i class="lnr lnr-user"></i> <span>个人主页</span></a></li>
 								<li><a href="/tw_epm/actions/user_signOut.action"><i class="lnr lnr-exit"></i> <span>退出</span></a></li>
 							</ul>
 						</li>

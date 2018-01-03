@@ -257,6 +257,84 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">学习资料</h3>
+							<div class="right">
+								<!-- 搜索条，后期可能会用，现在不用 -->
+								<form class="form-inline" role="form" style="float:left;margin-right:3px;" onsubmit="return false;">
+									<div class="form-group">
+										<input type="text" class="form-control" id="learnDocName"
+											   placeholder="资料名称" >
+									</div>
+									<div type="button" class="btn btn-primary"  onclick="searchLearnDoc()">搜索</div>
+									<div type="button" class="btn btn-primary"  onclick="searchAllLearnDoc()">查看全部</div>
+									<div type="button" class="btn btn-success"  onclick="addLearnDoc()">增加</div>
+								</form>
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body" style="display: block;">
+							<table class="table table-bordered">
+								<thead>
+									<!-- <th>
+											<input type="checkbox" id="pageList_selectAll">
+											</th> -->
+											<th>名称</th>
+											<th>类型</th>
+											<th>上传者名称(编号)</th>
+											<th>操作</th>
+								</thead>
+								<tbody id="pageList_LearnDoc_tbody">
+								</tbody>
+							</table>
+							<div class="pageUI">
+									<div class="page_footer" id="pageList_LearnDoc_pageui" onselectstart="return false">
+									</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">项目规范</h3>
+							<div class="right">
+								<!-- 搜索条，后期可能会用，现在不用 -->
+								<form class="form-inline" role="form" style="float:left;margin-right:3px;" onsubmit="return false;">
+									<div class="form-group">
+										<input type="text" class="form-control" id="specificationName"
+											   placeholder="规范名称" >
+									</div>
+									<div type="button" class="btn btn-primary"  onclick="searchSpecification()">搜索</div>
+									<div type="button" class="btn btn-primary"  onclick="searchAllSpecification()">查看全部</div>
+									<div type="button" class="btn btn-success"  onclick="addSpecification()">增加</div>
+								</form>
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body" style="display: block;">
+							<table class="table table-bordered">
+								<thead>
+									<!-- <th>
+											<input type="checkbox" id="pageList_selectAll">
+											</th> -->
+											<th>名称</th>
+											<th>时间</th>
+											<th>上传者名称(编号)</th>
+											<th>操作</th>
+								</thead>
+								<tbody id="pageList_Specification_tbody">
+								</tbody>
+							</table>
+							<div class="pageUI">
+									<div class="page_footer" id="pageList_Specification_pageui" onselectstart="return false">
+									</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				<!-- END MAIN CONTENT -->
 			</div>
@@ -440,7 +518,58 @@
 		</table>
 	</div>
 
+	<div id="learnDocBox">
+		<form action="#" method="post" id="learnDocBoxForm">
+			<input name="project" type="hidden" id="learnDocBoxProject">
+			<table class="table table-bordered">
+				<tbody >
+					<tr>
+						<td>名称</td>
+						<td>
+							<input type="text" class="form-control" id="learnDocBoxName"
+					   placeholder="名称" name="name">
+						</td>
+					</tr>
+					<tr>
+						<td>类型</td>
+						<td >
+							<input type="number" class="form-control" id="learnDocBoxType"
+					   placeholder="类型" min="0" max="100" name="type">
+						</td>
+					</tr>
+					<tr>
+						<td>文件</td>
+						<td id="">
+							<input type="file" class="form-control" id="learnDocBoxContent" name="content">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
 
+	<div id="specificationBox">
+		<form action="#" method="post" id="specificationBoxForm">
+			<input name="project" type="hidden" id="specificationBoxProject">
+			<table class="table table-bordered">
+				<tbody >
+					<tr>
+						<td>名称</td>
+						<td>
+							<input type="text" class="form-control" id="specificationBoxName"
+					   placeholder="名称" name="name">
+						</td>
+					</tr>
+					<tr>
+						<td>文件</td>
+						<td id="">
+							<input type="file" class="form-control" id="specificationBoxContent" name="content">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
 	<!-- Javascript -->
 	<script src="${pageContext.request.contextPath }/statics/js/laydate/laydate.js"></script>
 	<jsp:include   page="/end/script.jsp" flush="true"/>

@@ -3,6 +3,8 @@ var pageListmanageRole=new MyPage();
 var pageListmanageUser=new MyPage();
 var pageListmanageWorksiteRecord=new MyPage();
 var pageListmanagePoint=new MyPage();
+var pageListmanageLearnDoc=new MyPage();
+var pageListmanageSpecification=new MyPage();
 var pageListmanageChoseUser=new MyPage();
 var myChart = echarts.init(document.getElementById('projectChart'));
 var option;
@@ -42,6 +44,8 @@ function init(){
     searchAllRoleForUser();
     initWorksiteRecord(id);
     initPoint(id);
+    initLearnDoc(id);
+    initSpecification(id);
 }
 
 function initProject(id){
@@ -896,4 +900,241 @@ function configureAuth(checkBox,auth){
         }
     }
     
+}
+
+
+function initLearnDoc(id){
+    pageListmanageLearnDoc.init({
+        requesturl:"/tw_epm/actions/learnDoc_getByProjectAndName.action",//向后台请求数据路径
+        dataListId:"#pageList_LearnDoc_tbody",//填充数据的元素可根据id(要写#  eg:#content)也可根据class(要写. eg:.content)也可直接写标签名称
+        pageUI:"#pageList_LearnDoc_pageui",//分页条按钮填充区域命名规则同上
+        myname:"pageListmanageLearnDoc",//用户声明的变量名称
+        searchData:{
+            page:this.pg,
+            pageSize:this.pgz,
+            keys:"name+type+user+content+learnDocId",
+            project:id,
+            name:$("#learnDocName").val()
+        },//用户需要传到后台的多余数据可以为字符串，数字，或者json数据(此项可用来筛选数据，做查询功能)
+        pgz:10,//每页显示数据条数
+        but_num:20,//分页条按钮每组最多显示多少页
+        beginsearch:true,//是否在初始化时填充数据
+        drawDatatoCotent:function (data){
+                var allstr="";
+                allstr="<tr>"
+                +"</td><td>"+this.checkTypedof(data.name)
+                +"</td><td>"+this.checkTypedof(data.type)
+                +"</td><td>"+this.checkTypedof(data.user.name)+"("+this.checkTypedof(data.user.userId)+")"
+                +"</td><td>"+"<a  class='btn btn-warning  btn-sm' href='"+data.content+"'>下载</a>\n<button type='button' class='btn btn-danger  btn-sm' onclick='deleteLearnDoc("+data.learnDocId+")'>删除</button>"
+                +"</td></tr>";
+                return allstr;
+        }
+    });
+}
+
+function searchLearnDoc(){
+    pageListmanageLearnDoc.pg=1;
+    pageListmanageLearnDoc.nowgroup=1;
+    pageListmanageLearnDoc.searchData.name=$("#learnDocName").val();
+    pageListmanageLearnDoc.searchAll();
+}
+
+function searchAllLearnDoc(){
+    $("#learnDocName").val("");
+    searchLearnDoc();
+}
+
+function addLearnDoc(){
+    $("#learnDocBoxName").val("");
+    $("#learnDocBoxType").val(0);
+    $("#learnDocBoxProject").val(id);
+    layer.open({
+      type: 1,
+      shade: false,
+      title: "增加学习资料", //不显示标题
+      content: $('#learnDocBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+      btn:["提交"],
+      maxWidth:2000,
+      cancel: function(){
+        
+      },
+      btn1:function(index){
+        layer.close(index);
+        layer.load(2);
+        $.ajax({
+            url: "/tw_epm/actions/learnDoc_add.action",
+            type: 'POST',
+            dataType:"json",
+            contentType: false,
+            processData: false,
+            data:new FormData($("#learnDocBoxForm")[0]),
+            success: function(data) {
+                layer.msg('修改成功', {
+                    icon: 6
+                });
+                layer.closeAll('loading');
+                pageListmanageLearnDoc.searchAll();
+            },
+            error: function(data) {
+                pageListmanageLearnDoc.searchAll();
+                layer.closeAll('loading');
+                layer.msg(JSON.parse(data.responseText).error, {
+                    icon: 5
+                });
+            }
+        });
+      }
+    });
+}
+
+function deleteLearnDoc(learnDocId){
+    layer.msg('删除后不可恢复，您确定删除吗？', {
+        time: 0 //不自动关闭
+        ,
+        btn: ['删除', '取消'],
+        yes: function(index) {
+            layer.close(index);
+            layer.load(2);
+            $.ajax({
+                url: "/tw_epm/actions/learnDoc_deleteByIds.action",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    ids:learnDocId
+                },
+                success: function(data) {
+                    layer.msg('删除成功', {
+                        icon: 6
+                    });
+                    pageListmanageLearnDoc.searchAll();
+                    layer.closeAll('loading');
+                },
+                error: function(data) {
+                    pageListmanageLearnDoc.searchAll();
+                    layer.closeAll('loading');
+                    layer.msg(JSON.parse(data.responseText).error, {
+                        icon: 5
+                    });
+                }
+            });
+        }
+    });
+}
+
+
+function initSpecification(id){
+    pageListmanageSpecification.init({
+        requesturl:"/tw_epm/actions/specification_getByProjectAndName.action",//向后台请求数据路径
+        dataListId:"#pageList_Specification_tbody",//填充数据的元素可根据id(要写#  eg:#content)也可根据class(要写. eg:.content)也可直接写标签名称
+        pageUI:"#pageList_Specification_pageui",//分页条按钮填充区域命名规则同上
+        myname:"pageListmanageSpecification",//用户声明的变量名称
+        searchData:{
+            page:this.pg,
+            pageSize:this.pgz,
+            keys:"name+date+user+content+specificationId",
+            project:id,
+            name:$("#specificationName").val()
+        },//用户需要传到后台的多余数据可以为字符串，数字，或者json数据(此项可用来筛选数据，做查询功能)
+        pgz:10,//每页显示数据条数
+        but_num:20,//分页条按钮每组最多显示多少页
+        beginsearch:true,//是否在初始化时填充数据
+        drawDatatoCotent:function (data){
+                var allstr="";
+                allstr="<tr>"
+                +"</td><td>"+this.checkTypedof(data.name)
+                +"</td><td>"+this.checkTypedof(data.date)
+                +"</td><td>"+this.checkTypedof(data.user.name)+"("+this.checkTypedof(data.user.userId)+")"
+                +"</td><td>"+"<a  class='btn btn-warning  btn-sm' href='"+data.content+"'>下载</a>\n<button type='button' class='btn btn-danger  btn-sm' onclick='deleteSpecification("+data.specificationId+")'>删除</button>"
+                +"</td></tr>";
+                return allstr;
+        }
+    });
+}
+
+function searchSpecification(){
+    pageListmanageSpecification.pg=1;
+    pageListmanageSpecification.nowgroup=1;
+    pageListmanageSpecification.searchData.name=$("#specificationName").val();
+    pageListmanageSpecification.searchAll();
+}
+
+function searchAllSpecification(){
+    $("#specificationName").val("");
+    searchSpecification();
+}
+
+function addSpecification(){
+    $("#specificationBoxName").val("");
+    $("#specificationBoxProject").val(id);
+    layer.open({
+      type: 1,
+      shade: false,
+      title: "增加项目规范", //不显示标题
+      content: $('#specificationBox'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+      btn:["提交"],
+      maxWidth:2000,
+      cancel: function(){
+        
+      },
+      btn1:function(index){
+        layer.close(index);
+        layer.load(2);
+        $.ajax({
+            url: "/tw_epm/actions/specification_add.action",
+            type: 'POST',
+            dataType:"json",
+            contentType: false,
+            processData: false,
+            data:new FormData($("#specificationBoxForm")[0]),
+            success: function(data) {
+                layer.msg('修改成功', {
+                    icon: 6
+                });
+                layer.closeAll('loading');
+                pageListmanageSpecification.searchAll();
+            },
+            error: function(data) {
+                pageListmanageSpecification.searchAll();
+                layer.closeAll('loading');
+                layer.msg(JSON.parse(data.responseText).error, {
+                    icon: 5
+                });
+            }
+        });
+      }
+    });
+}
+
+function deleteSpecification(specificationId){
+    layer.msg('删除后不可恢复，您确定删除吗？', {
+        time: 0 //不自动关闭
+        ,
+        btn: ['删除', '取消'],
+        yes: function(index) {
+            layer.close(index);
+            layer.load(2);
+            $.ajax({
+                url: "/tw_epm/actions/specification_deleteByIds.action",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    ids:specificationId
+                },
+                success: function(data) {
+                    layer.msg('删除成功', {
+                        icon: 6
+                    });
+                    pageListmanageSpecification.searchAll();
+                    layer.closeAll('loading');
+                },
+                error: function(data) {
+                    pageListmanageSpecification.searchAll();
+                    layer.closeAll('loading');
+                    layer.msg(JSON.parse(data.responseText).error, {
+                        icon: 5
+                    });
+                }
+            });
+        }
+    });
 }
