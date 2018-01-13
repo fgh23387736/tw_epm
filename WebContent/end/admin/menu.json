@@ -1,0 +1,109 @@
+{
+    "data": [
+        {
+            "menuId": "1", 
+            "menuName": "总目录", 
+            "menuIcon": "fa-cog", 
+            "menuHref": "", 
+            "parentMenuId": "0"
+        }, 
+        {
+            "menuId": "home", 
+            "menuName": "首页", 
+            "menuIcon": "&#xe68e;", 
+            "menuHref": "views/home/index.html", 
+            "parentMenuId": "1"
+        },
+        {
+            "menuId": "project", 
+            "menuName": "项目管理", 
+            "menuIcon": "&#xe62a;", 
+            "menuHref": "", 
+            "parentMenuId": "1"
+        },
+        {
+            "menuId": "myProject", 
+            "menuName": "我创建的项目", 
+            "menuIcon": "&#xe63c;", 
+            "menuHref": "views/project/projects/index.html", 
+            "parentMenuId": "project"
+        },
+        {
+            "menuId": "myJoinProject", 
+            "menuName": "我参与的项目", 
+            "menuIcon": "&#xe60a;", 
+            "menuHref": "views/project/joinProjects/index.html", 
+            "parentMenuId": "project"
+        },
+        {
+            "menuId": "user", 
+            "menuName": "人员管理", 
+            "menuIcon": "&#xe613;", 
+            "menuHref": "views/user/index.html", 
+            "parentMenuId": "1"
+        },
+        {
+            "menuId": "personalInformation", 
+            "menuName": "个人中心", 
+            "menuIcon": "fa fa-user-circle", 
+            "menuHref": "views/personalInformation/index.html", 
+            "parentMenuId": "1"
+        },
+        {
+            "menuId": "2", 
+            "menuName": "项目", 
+            "menuIcon": "", 
+            "menuHref": "", 
+            "parentMenuId": "0"
+        },
+        {
+            "menuId": "projectHome", 
+            "menuName": "项目首页", 
+            "menuIcon": "fa fa-television", 
+            "menuHref": "views/project/project/home/index.html", 
+            "parentMenuId": "2"
+        },
+        {
+            "menuId": "projectRole", 
+            "menuName": "项目角色", 
+            "menuIcon": "fa fa-user-plus", 
+            "menuHref": "views/project/project/role/index.html", 
+            "parentMenuId": "2"
+        },
+        {
+            "menuId": "projectUser", 
+            "menuName": "项目人员", 
+            "menuIcon": "fa fa-users", 
+            "menuHref": "views/project/project/user/index.html", 
+            "parentMenuId": "2"
+        },
+        {
+            "menuId": "projectWorksiteRecord", 
+            "menuName": "项目现场记录", 
+            "menuIcon": "fa fa-video-camera", 
+            "menuHref": "views/project/project/worksiteRecord/index.html", 
+            "parentMenuId": "2"
+        },
+        {
+            "menuId": "projectPoint", 
+            "menuName": "项目节点", 
+            "menuIcon": "fa fa-object-group", 
+            "menuHref": "views/project/project/point/index.html", 
+            "parentMenuId": "2"
+        },
+        {
+            "menuId": "projectLearnDoc", 
+            "menuName": "项目学习资料", 
+            "menuIcon": "fa fa-file-word-o", 
+            "menuHref": "views/project/project/learnDoc/index.html", 
+            "parentMenuId": "2"
+        },
+        {
+            "menuId": "projectSpecification", 
+            "menuName": "项目规范", 
+            "menuIcon": "fa fa-book", 
+            "menuHref": "views/project/project/specification/index.html", 
+            "parentMenuId": "2"
+        },
+    ]
+}
