@@ -41,7 +41,9 @@ public class SignService {
 					"signId",
 					"date",
 					"project",
-					"user"
+					"user",
+					"longitude",
+					"latitude"
 			};
 			keysArrStrings = tempKeys;
 		}
@@ -64,6 +66,10 @@ public class SignService {
 				return sign.getSignId();
 			case "date":
 				return sign.getDate();
+			case "longitude":
+				return sign.getLongitude();
+			case "latitude":
+				return sign.getLatitude();
 			case "user":
 				theMap = new HashMap<String, Object>();
 				User theUser = sign.getUser();

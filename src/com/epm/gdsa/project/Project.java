@@ -66,6 +66,15 @@ public class Project {
 	@Column(name="GDSA_PROJECT_NAME")
 	private String name;//项目名称
 	
+	@Column(name="GDSA_PROJECT_LONGITUDE")
+	private Double longitude;//经度
+	
+	@Column(name="GDSA_PROJECT_LATITUDE")
+	private Double latitude;//纬度
+	
+	@Column(name="GDSA_PROJECT_RADIUS")
+	private Integer radius;//半径
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_PROJECT_USER")
 	private User user; 	//上传者
@@ -114,6 +123,36 @@ public class Project {
 	@JSONField(serialize=false)
 	private Set<LearnDoc> learnDocs = new HashSet<LearnDoc>();
 	
+	public Double getLongitude() {
+		return longitude;
+	}
+
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+
+	public Integer getRadius() {
+		return radius;
+	}
+
+
+	public void setRadius(Integer radius) {
+		this.radius = radius;
+	}
+
+
 	public Set<Material> getMaterials() {
 		return materials;
 	}

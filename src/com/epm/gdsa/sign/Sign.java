@@ -34,6 +34,12 @@ public class Sign {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;		//日期
 	
+	@Column(name="GDSA_SIGN_LONGITUDE")
+	private Double longitude;//经度
+	
+	@Column(name="GDSA_SIGN_LATITUDE")
+	private Double latitude;//纬度
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SIGN_USER")
 	private User user; 	//单位
@@ -41,6 +47,22 @@ public class Sign {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SIGN_PROJECT")
 	private Project project; 	//项目
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
 	public Integer getSignId() {
 		return signId;

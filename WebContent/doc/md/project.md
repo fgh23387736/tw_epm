@@ -8,6 +8,10 @@
 				name(String):#名称，
 				startDate(String):#预计开始时间 eg "2017-10-10 00:00:00"，
 				endDateA(String):#预计结束时间，
+				longitude(float):#经度，
+				latitude(float):#纬度，
+				radius(int):#半径
+				
 			}
 			#状态码为201时表示增加成功 并返回下列信息
 			return {
@@ -63,6 +67,9 @@
 				startDate(String):#预计开始时间，
 				endDateA(String):#预计结束时间，
 				endDateB(String):#实际结束时间，
+				longitude(float):#经度，
+				latitude(float):#纬度，
+				radius(int):#半径
 			}	
 		
 			
@@ -130,6 +137,9 @@
 				startDate(String):#预计开始时间，
 				endDateA(String):#预计结束时间，
 				endDateB(String):#实际结束时间，
+				longitude(float):#经度，
+				latitude(float):#纬度，
+				radius(int):#半径
 				percentage(int):#当前进度百分比0-100，
 				points:[
 					{

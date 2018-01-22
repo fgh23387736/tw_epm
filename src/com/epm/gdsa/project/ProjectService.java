@@ -49,7 +49,10 @@ public class ProjectService {
 					"endDateB",
 					"points",
 					"user",
-					"percentage"
+					"percentage",
+					"longitude",
+					"latitude",
+					"radius"
 			};
 			keysArrStrings = tempKeys;
 		}
@@ -81,6 +84,12 @@ public class ProjectService {
 				return project.getEndDateB();
 			case "content":
 				return project.getContent();
+			case "longitude":
+				return project.getLongitude();
+			case "latitude":
+				return project.getLatitude();
+			case "radius":
+				return project.getRadius();
 			case "percentage":
 				list = new ArrayList<Map<String, Object>>();
 				Set<Point> thePoints = project.getPoints();
@@ -140,6 +149,15 @@ public class ProjectService {
 					break;
 				case "endDateB":
 					project.setEndDateB(newProject.getEndDateB());
+					break;
+				case "longitude":
+					project.setLongitude(newProject.getLongitude());
+					break;
+				case "latitude":
+					project.setLatitude(newProject.getLatitude());
+					break;
+				case "radius":
+					project.setRadius(newProject.getRadius());
 					break;
 				default:
 					

@@ -16,6 +16,7 @@ import com.epm.gdsa.project.ProjectService;
 import com.epm.gdsa.user.User;
 import com.epm.gdsa.userPro.UserPro;
 import com.epm.gdsa.userPro.UserProService;
+import com.epm.utils.MapUtils;
 import com.epm.utils.PublicUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
@@ -248,25 +249,38 @@ public class SignAction extends ActionSupport implements ModelDriven<Sign>{
 				responseBean.setStatus(400);
 				responseBean.put("error", "项目不存在");
 			}else{
-				UserPro userProTemp = new UserPro();
-				userProTemp.setProject(theProject);
-				userProTemp.setUser(loginUser);
-				Map<String, Object> userProMap = userProService.getByProjectAndUser("userProId", null, null, userProTemp);
-				if((int)userProMap.get("total") != 0 || loginUser.getUserId() == theProject.getUser().getUserId()){
-					sign.setUser(loginUser);
-					sign.setDate(new Date());
-					sign = signService.add(sign);
-					if(sign.getSignId() != null) {
-						responseBean.setStatus(200);
-						responseBean.put("signId", sign.getSignId());
-					} else {
-						responseBean.put("error", "添加失败，系统错误");
-						responseBean.setStatus(500);
+				if(sign.getLatitude() != null && sign.getLongitude() != null){
+					double theDistance = MapUtils.GetDistance(sign.getLatitude(), sign.getLongitude(), theProject.getLatitude(), theProject.getLongitude());
+					System.out.println("distance:"+theDistance);
+					if(theDistance > theProject.getRadius() + 500 ){
+						responseBean.setStatus(401);
+						responseBean.put("error", "您不在规定区域无法签到");
+					}else{
+						UserPro userProTemp = new UserPro();
+						userProTemp.setProject(theProject);
+						userProTemp.setUser(loginUser);
+						Map<String, Object> userProMap = userProService.getByProjectAndUser("userProId", null, null, userProTemp);
+						if((int)userProMap.get("total") != 0 || loginUser.getUserId() == theProject.getUser().getUserId()){
+							sign.setUser(loginUser);
+							sign.setDate(new Date());
+							sign = signService.add(sign);
+							if(sign.getSignId() != null) {
+								responseBean.setStatus(200);
+								responseBean.put("signId", sign.getSignId());
+							} else {
+								responseBean.put("error", "添加失败，系统错误");
+								responseBean.setStatus(500);
+							}
+						}else{
+							responseBean.setStatus(400);
+							responseBean.put("error", "您未参与该项目，无法签到");
+						}
 					}
 				}else{
-					responseBean.setStatus(400);
-					responseBean.put("error", "您未参与该项目，无法签到");
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不在规定区域无法签到");
 				}
+				
 			}
 		}
 		try {

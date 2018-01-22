@@ -4,7 +4,8 @@
 			POST /tw_epm/actions/sign_add.action
 			#只有管理员有权限操作
 			to{
-				state(int):#状态，
+				longitude(float):#经度，
+				latitude(float):#纬度，
 				project(int):#所属项目，
 			}
 			#状态码为201时表示增加成功 并返回下列信息
@@ -12,6 +13,7 @@
 				signId:#项目Id
 			}
 			#修改失败时（状态码非201）并返回下列信息
+			#如果不在规定区域error会提示：您不在规定区域无法签到
 			return {
 				error:#出错原因
 			}
@@ -110,7 +112,8 @@
 			Keys∈{
 				signId(int):#项目id
 				date(String):#时间 eg "2017-10-10 00:00:00"，
-				project:{
+				longitude(float):#经度，
+				latitude(float):#纬度，oject:{
 					projectId：，
 					name
 				}#所属项目，
