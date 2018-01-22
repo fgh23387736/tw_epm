@@ -90,13 +90,23 @@
 				ids:'1+2+3+...',#搜索记录Id
 			}
 			
-			#根据创建用户搜索
+			#根据项目搜索
 			POST /tw_epm/actions/learnDoc_getByProject.action
 			to:{
 				keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
 				page:1,#当前页数，（可选，Page和PageSize必须同时存在）
 				pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
 				project:,#所属项目Id
+			}
+
+			#根据项目和名称搜索
+			POST /tw_epm/actions/learnDoc_getByProjectAndName.action
+			to:{
+				keys:'Id+Title+Price...',#需要获取的属性名，每个属性之间用'+'隔开
+				page:1,#当前页数，（可选，Page和PageSize必须同时存在）
+				pageSize：10，#每页数据条数（可选，Page和PageSize必须同时存在）
+				project:,#所属项目Id
+				name:#名称
 			}
 
 			#若Keys为空则表示搜索下方全部字段
