@@ -10,7 +10,7 @@
 				endDateA(String):#预计结束时间，
 				longitude(float):#经度，
 				latitude(float):#纬度，
-				radius(int):#半径
+				radius(int):#半径m
 				
 			}
 			#状态码为201时表示增加成功 并返回下列信息
@@ -129,7 +129,7 @@
 				name(String):#项目名称
 			}			
 
-			#若Keys为空则表示搜索下方全部字段
+			#若Keys为空则表示搜索下方全部字段(signCode除外)
 			Keys∈{
 				projectId(int):#项目id
 				content(String):#内容，
@@ -141,6 +141,7 @@
 				latitude(float):#纬度，
 				radius(int):#半径
 				percentage(int):#当前进度百分比0-100，
+				signCode(String):#签到码，这个只有有权限的人获取，没有权限获取到的为空，编码方式：时间戳_项目Id_生成人员ID_[0-1000随机数]
 				points:[
 					{
 						pointId(int):#节点id

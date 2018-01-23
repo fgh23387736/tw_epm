@@ -75,6 +75,9 @@ public class Project {
 	@Column(name="GDSA_PROJECT_RADIUS")
 	private Integer radius;//半径
 	
+	@Column(name="GDSA_PROJECT_SIGNCODE")
+	private String signCode;//签到码
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_PROJECT_USER")
 	private User user; 	//上传者
@@ -123,6 +126,16 @@ public class Project {
 	@JSONField(serialize=false)
 	private Set<LearnDoc> learnDocs = new HashSet<LearnDoc>();
 	
+	public String getSignCode() {
+		return signCode;
+	}
+
+
+	public void setSignCode(String signCode) {
+		this.signCode = signCode;
+	}
+
+
 	public Double getLongitude() {
 		return longitude;
 	}

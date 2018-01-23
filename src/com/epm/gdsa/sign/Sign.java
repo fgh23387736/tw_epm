@@ -40,6 +40,12 @@ public class Sign {
 	@Column(name="GDSA_SIGN_LATITUDE")
 	private Double latitude;//纬度
 	
+	@Column(name="GDSA_SIGN_SIGNCODE")
+	private String signCode;//签到码
+	
+	@Column(name="GDSA_SIGN_TYPE")
+	private Integer type;//签到方式
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SIGN_USER")
 	private User user; 	//单位
@@ -47,6 +53,22 @@ public class Sign {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="GDSA_SIGN_PROJECT")
 	private Project project; 	//项目
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getSignCode() {
+		return signCode;
+	}
+
+	public void setSignCode(String signCode) {
+		this.signCode = signCode;
+	}
 
 	public Double getLongitude() {
 		return longitude;

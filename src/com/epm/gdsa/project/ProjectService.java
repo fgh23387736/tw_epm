@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.point.Point;
 import com.epm.gdsa.project.ProjectDao;
 import com.epm.gdsa.user.User;
+import com.epm.gdsa.user.UserService;
 
 @Transactional
 @Component(value="projectService")
@@ -24,6 +26,9 @@ public class ProjectService {
 	@Autowired
 	private ProjectDao projectDao;
 
+	@Autowired
+	private UserService userService;
+		
 	public ProjectDao getProjectDao() {
 		return projectDao;
 	}
@@ -32,7 +37,7 @@ public class ProjectService {
 		this.projectDao = projectDao;
 	}
 	
-	public List<Map<String, Object>> getProjectByKeys(String keys,List<Project> projects){
+	public List<Map<String, Object>> getProjectByKeys(String keys,List<Project> projects,User loginUser){
 		if (keys == null) {
 			keys = "";
 		}else{
@@ -61,14 +66,14 @@ public class ProjectService {
 		for (Project project : projects) {
 			map = new HashMap<String, Object>();
 			for (String key : keysArrStrings) {
-				map.put(key, getAttributeByString(project,key));
+				map.put(key, getAttributeByString(project,key,loginUser));
 			}
 			list.add(map);
 		}
 		return list;
 	}
 	
-	public Object getAttributeByString(Project project,String str){
+	public Object getAttributeByString(Project project,String str,User loginUser){
 		Map<String, Object> theMap;
 		List<Map<String, Object>> list;
 		switch (str) {
@@ -90,6 +95,12 @@ public class ProjectService {
 				return project.getLatitude();
 			case "radius":
 				return project.getRadius();
+			case "sigeCode":
+				if(userService.isHaveTheAuthInTheProject(project, ProRoleAuthEnum.SIGN_CODE, loginUser)){
+					return project.getSignCode();
+				}else{
+					return null;
+				}
 			case "percentage":
 				list = new ArrayList<Map<String, Object>>();
 				Set<Point> thePoints = project.getPoints();
@@ -169,11 +180,11 @@ public class ProjectService {
 	}
 	
 	public Map<String, Object> getMapByKeysAndPage(String keys,
-			Integer page, Integer pageSize,DetachedCriteria criteria){
+			Integer page, Integer pageSize,DetachedCriteria criteria,User loginUser){
 		int total = 0;
 		List<Project> projects = projectDao.getDataByCriteria(page, pageSize, criteria);
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<Map<String, Object>> list = getProjectByKeys(keys,projects);
+		List<Map<String, Object>> list = getProjectByKeys(keys,projects,loginUser);
 		if(page != null && pageSize != null){
 			total = projectDao.getAllCountByCriteria(criteria);
 		}else{
@@ -191,9 +202,9 @@ public class ProjectService {
 	}
 	
 
-	public Map<String, Object> getProjectByIds(String keys,Integer page,Integer pageSize,Integer[] ids) {
+	public Map<String, Object> getProjectByIds(String keys,Integer page,Integer pageSize,Integer[] ids,User loginUser) {
 		DetachedCriteria criteria = projectDao.getCriteriaByIds(ids);
-		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
+		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria,loginUser);
 		return map;
 	}
 
@@ -267,16 +278,16 @@ public class ProjectService {
 	}
 
 	public Map<String, Object> getProjectByUserAndName(String keys,
-			Integer page, Integer pageSize, Project project) {
+			Integer page, Integer pageSize, Project project,User loginUser) {
 		DetachedCriteria criteria = projectDao.getCriteriaByUserAndName(project);
-		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
+		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria,loginUser);
 		return map;
 	}
 
 	public Map<String, Object> getProjectByJoinUser(String keys, Integer page,
-			Integer pageSize, Project project) {
+			Integer pageSize, Project project,User loginUser) {
 		DetachedCriteria criteria = projectDao.getCriteriaByJoinUser(project);
-		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
+		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria,loginUser);
 		return map;
 	}
 
@@ -285,9 +296,9 @@ public class ProjectService {
 	}
 
 	public Map<String, Object> getProjectByJoinUserAndName(String keys,
-			Integer page, Integer pageSize, Project project) {
+			Integer page, Integer pageSize, Project project,User loginUser) {
 		DetachedCriteria criteria = projectDao.getCriteriaByJoinUserAndName(project);
-		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria);
+		Map<String, Object> map = getMapByKeysAndPage(keys,page,pageSize,criteria,loginUser);
 		return map;
 	}
 
@@ -311,6 +322,11 @@ public class ProjectService {
 	public int getProjectNumberByEndDateBBetween(Date startDate, Date endDate) {
 		// TODO 自动生成的方法存根
 		return projectDao.getAllCountByCriteria(projectDao.getCriteriaByEndDateBBetween(startDate,endDate));
+	}
+
+	public void update(Project project) {
+		projectDao.update(project);
+		
 	}
 
 

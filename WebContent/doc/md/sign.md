@@ -1,13 +1,30 @@
 1.  <a name='sign'></a>**签到[增](#sign_add)、[删](#sign_delete)、[改](#sign_change)、[查](#sign_search)**
 	- <a name="sign_add">增</a>
 
-			POST /tw_epm/actions/sign_add.action
-			#只有管理员有权限操作
+			POST /tw_epm/actions/sign_addByPosition.action
+			#根据位置签到
 			to{
 				longitude(float):#经度，
 				latitude(float):#纬度，
 				project(int):#所属项目，
 			}
+
+			POST /tw_epm/actions/sign_addBySignCode.action
+			#根据签到码签到
+			to{
+				signCode(String):#签到码，从管理员处获取
+				project(int):#所属项目，
+			}
+
+			POST /tw_epm/actions/sign_addBySignCodeAndPosition.action
+			#根据签到码和位置签到
+			to{
+				signCode(String):#签到码，从管理员处获取
+				longitude(float):#经度，
+				latitude(float):#纬度，
+				project(int):#所属项目
+			}
+
 			#状态码为201时表示增加成功 并返回下列信息
 			return {
 				signId:#项目Id
@@ -113,7 +130,14 @@
 				signId(int):#项目id
 				date(String):#时间 eg "2017-10-10 00:00:00"，
 				longitude(float):#经度，
-				latitude(float):#纬度，oject:{
+				latitude(float):#纬度，
+				signCode(String):#签到码，
+				type(int):#签到方式∈{
+						0：位置签到
+						1：签到码签到
+						2：签到码和位置签到
+				}
+				Project:{
 					projectId：，
 					name
 				}#所属项目，

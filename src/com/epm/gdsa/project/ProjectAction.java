@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.epm.beans.ResponseBean;
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.project.Project;
 import com.epm.gdsa.user.User;
@@ -154,17 +155,17 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 	
 	public void getByIds(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			Integer[] idsIntegers = PublicUtils.getIdsByString(ids, "\\+");
 			if(idsIntegers == null || idsIntegers.length == 0){
 				idsIntegers = new Integer[1];
-				idsIntegers[0] = user2.getUserId();
+				idsIntegers[0] = loginUser.getUserId();
 			}
-			Map<String, Object> map = projectService.getProjectByIds(keys,page,pageSize,idsIntegers);
+			Map<String, Object> map = projectService.getProjectByIds(keys,page,pageSize,idsIntegers,loginUser);
 			responseBean.setObjMap(map);
 			
 		}
@@ -178,15 +179,15 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 	
 	public void getByUserAndName(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(project.getUser().getUserId() == 0 || project.getUser().getUserId() == null){
-				project.setUser(user2);
+				project.setUser(loginUser);
 			}
-			Map<String, Object> map = projectService.getProjectByUserAndName(keys,page,pageSize,project);
+			Map<String, Object> map = projectService.getProjectByUserAndName(keys,page,pageSize,project,loginUser);
 			responseBean.setObjMap(map);
 			
 		}
@@ -200,15 +201,15 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 	
 	public void getByJoinUserAndName(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(project.getUser().getUserId() == 0 || project.getUser().getUserId() == null){
-				project.setUser(user2);
+				project.setUser(loginUser);
 			}
-			Map<String, Object> map = projectService.getProjectByJoinUserAndName(keys,page,pageSize,project);
+			Map<String, Object> map = projectService.getProjectByJoinUserAndName(keys,page,pageSize,project,loginUser);
 			responseBean.setObjMap(map);
 			
 		}
@@ -222,15 +223,15 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 	
 	public void getByJoinUser(){
 		ResponseBean responseBean = new ResponseBean();
-		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		if (user2 == null) {
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
 			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权获取本信息");
 		}else{
 			if(project.getUser().getUserId() == 0 || project.getUser().getUserId() == null){
-				project.setUser(user2);
+				project.setUser(loginUser);
 			}
-			Map<String, Object> map = projectService.getProjectByJoinUser(keys,page,pageSize,project);
+			Map<String, Object> map = projectService.getProjectByJoinUser(keys,page,pageSize,project,loginUser);
 			responseBean.setObjMap(map);
 			
 		}
@@ -281,5 +282,45 @@ public class ProjectAction extends ActionSupport implements ModelDriven<Project>
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void changeSignCode(){
+		ResponseBean responseBean = new ResponseBean();
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(401);
+			responseBean.put("error", "您还未登录，无权进行本操作");
+		}else{
+			if(project.getProjectId() == null){
+				responseBean.setStatus(400);
+				responseBean.put("error", "无项目");
+			}else{
+				Project theProject = projectService.getById(project.getProjectId());
+				if(theProject == null){
+					responseBean.setStatus(404);
+					responseBean.put("error", "项目不存在");
+				}else{
+					if(userService.isHaveTheAuthInTheProject(theProject, ProRoleAuthEnum.SIGN_CODE, loginUser)){
+						String signCode = System.currentTimeMillis() + "_" 
+								+ theProject.getProjectId() + "_"
+								+loginUser.getUserId() + "_"
+								+PublicUtils.getRandom(0, 1000);
+						theProject.setSignCode(signCode);
+						projectService.update(theProject);
+						responseBean.setStatus(201);
+						responseBean.put("signCode",signCode);
+					}else{
+						responseBean.setStatus(401);
+						responseBean.put("error", "您不具有权限");
+					}
+				}
+				
+			}
+		}
+		try {
+			responseBean.writeTheMap();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
 }

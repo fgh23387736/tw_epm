@@ -1,6 +1,7 @@
 package com.epm.gdsa.user;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epm.enums.ProRoleAuthEnum;
 import com.epm.gdsa.point.Point;
+import com.epm.gdsa.proRole.ProRoleService;
+import com.epm.gdsa.project.Project;
+import com.epm.gdsa.project.ProjectDao;
+import com.epm.gdsa.userPro.UserPro;
+import com.epm.gdsa.userPro.UserProService;
+import com.epm.utils.PublicUtils;
 
 
 
@@ -22,7 +30,16 @@ public class UserService {
 	
 	@Autowired
 	private UserDao userDao;
-
+	
+	@Autowired
+	private ProjectDao projectDao;
+	
+	@Autowired
+	private UserProService userProService;
+	
+	@Autowired
+	private ProRoleService proRoleService;
+	
 	public UserDao getUserDao() {
 		return userDao;
 	}
@@ -231,4 +248,29 @@ public class UserService {
 		return userDao.getAllCountByCriteria(userDao.getCriteriaByMinType(user));
 	}
 	
+	public boolean isHaveTheAuthInTheProject(Project project,ProRoleAuthEnum proRoleAuthEnum,User user){
+		if(project == null){
+			return false;
+		}else{
+			project = projectDao.getById(project.getProjectId());
+			if(project == null){
+				return false;
+			}
+			boolean isHaveTheAuth = false;
+			List<UserPro> theUserProList = userProService.getByProjectAndUser(project,user);
+			if(theUserProList.size() > 0 ){
+				for (UserPro userPro : theUserProList) {
+					if(proRoleService.isHaveTheAuth(userPro.getProRole(), ProRoleAuthEnum.SPECIFICATION)){
+						isHaveTheAuth = true;
+						break;
+					}
+				}
+			}
+			if(user.getUserId() == project.getUser().getUserId()){
+				isHaveTheAuth = true;
+			}
+			return isHaveTheAuth;
+		}
+		
+	}
 }

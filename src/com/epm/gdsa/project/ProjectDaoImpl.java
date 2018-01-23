@@ -40,7 +40,6 @@ public class ProjectDaoImpl implements ProjectDao {
 	public Project add(Project project) {
 		// TODO 自动生成的方法存根
 		hibernateTemplate.save(project);
-		System.out.println("Id:"+project.getProjectId());
 		return project;
 	}
 	
@@ -48,7 +47,6 @@ public class ProjectDaoImpl implements ProjectDao {
 	public void update(Project project) {
 		// TODO 自动生成的方法存根
 		hibernateTemplate.update(project);
-		System.out.println("dao");
 	}
 	
 	@Override

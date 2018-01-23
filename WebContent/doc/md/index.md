@@ -34,6 +34,7 @@
 		LEARN_DOC:上传学习资料
 		POINT_PROBLEM:针对节点提问
 		POINT_ANSWER:回答节点问题
+		SIGN_CODE:生成并获取签到码
 		*:项目经理(项目发起人),拥有所有权限
 
 
@@ -64,3 +65,7 @@
 #专门页面接口
 
 ##### 1. [管理员首页](adminIndex.html)<已完成>
+
+#专用接口
+##### 1. [刷新签到码（获取接口在项目通用接口中）](special.html#changeSignCode)
+##### 2. [查询某地点是否在工作区域（位置签到接口会自动验证无须提前调用本接口）](special.html#isInProjectArea)

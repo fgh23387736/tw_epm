@@ -235,11 +235,9 @@ public class SignAction extends ActionSupport implements ModelDriven<Sign>{
 		}
 	}
 	
-	public void add(){
+	public void addByPosition(){
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		String method = ServletActionContext.getRequest().getMethod();
-		System.out.println(method);
 		if (loginUser == null) {
 			responseBean.setStatus(400);
 			responseBean.put("error", "您还未登录，无权进行本操作");
@@ -251,7 +249,6 @@ public class SignAction extends ActionSupport implements ModelDriven<Sign>{
 			}else{
 				if(sign.getLatitude() != null && sign.getLongitude() != null){
 					double theDistance = MapUtils.GetDistance(sign.getLatitude(), sign.getLongitude(), theProject.getLatitude(), theProject.getLongitude());
-					System.out.println("distance:"+theDistance);
 					if(theDistance > theProject.getRadius() + 500 ){
 						responseBean.setStatus(401);
 						responseBean.put("error", "您不在规定区域无法签到");
@@ -263,6 +260,7 @@ public class SignAction extends ActionSupport implements ModelDriven<Sign>{
 						if((int)userProMap.get("total") != 0 || loginUser.getUserId() == theProject.getUser().getUserId()){
 							sign.setUser(loginUser);
 							sign.setDate(new Date());
+							sign.setType(0);
 							sign = signService.add(sign);
 							if(sign.getSignId() != null) {
 								responseBean.setStatus(200);
@@ -274,6 +272,114 @@ public class SignAction extends ActionSupport implements ModelDriven<Sign>{
 						}else{
 							responseBean.setStatus(400);
 							responseBean.put("error", "您未参与该项目，无法签到");
+						}
+					}
+				}else{
+					responseBean.setStatus(401);
+					responseBean.put("error", "您不在规定区域无法签到");
+				}
+				
+			}
+		}
+		try {
+			responseBean.writeTheMap();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
+	
+	public void addBySignCode(){
+		ResponseBean responseBean = new ResponseBean();
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(400);
+			responseBean.put("error", "您还未登录，无权进行本操作");
+		}else{			
+			Project theProject = projectService.getById(sign.getProject().getProjectId());
+			if(theProject == null){
+				responseBean.setStatus(400);
+				responseBean.put("error", "项目不存在");
+			}else{
+				if(theProject.getSignCode().equals(sign.getSignCode())){
+					UserPro userProTemp = new UserPro();
+					userProTemp.setProject(theProject);
+					userProTemp.setUser(loginUser);
+					Map<String, Object> userProMap = userProService.getByProjectAndUser("userProId", null, null, userProTemp);
+					if((int)userProMap.get("total") != 0 || loginUser.getUserId() == theProject.getUser().getUserId()){
+						sign.setUser(loginUser);
+						sign.setDate(new Date());
+						sign.setType(1);
+						sign = signService.add(sign);
+						if(sign.getSignId() != null) {
+							responseBean.setStatus(200);
+							responseBean.put("signId", sign.getSignId());
+						} else {
+							responseBean.put("error", "添加失败，系统错误");
+							responseBean.setStatus(500);
+						}
+					}else{
+						responseBean.setStatus(400);
+						responseBean.put("error", "您未参与该项目，无法签到");
+					}
+				}else{
+					responseBean.setStatus(401);
+					responseBean.put("error", "签到码错误");
+				}
+				
+			}
+		}
+		try {
+			responseBean.writeTheMap();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
+	
+	public void addBySignCodeAndPosition(){
+		ResponseBean responseBean = new ResponseBean();
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(400);
+			responseBean.put("error", "您还未登录，无权进行本操作");
+		}else{			
+			Project theProject = projectService.getById(sign.getProject().getProjectId());
+			if(theProject == null){
+				responseBean.setStatus(400);
+				responseBean.put("error", "项目不存在");
+			}else{
+				if(sign.getLatitude() != null && sign.getLongitude() != null){
+					double theDistance = MapUtils.GetDistance(sign.getLatitude(), sign.getLongitude(), theProject.getLatitude(), theProject.getLongitude());
+					if(theDistance > theProject.getRadius() + 500 ){
+						responseBean.setStatus(401);
+						responseBean.put("error", "您不在规定区域无法签到");
+					}else{
+						
+						if(theProject.getSignCode().equals(sign.getSignCode())){
+							UserPro userProTemp = new UserPro();
+							userProTemp.setProject(theProject);
+							userProTemp.setUser(loginUser);
+							Map<String, Object> userProMap = userProService.getByProjectAndUser("userProId", null, null, userProTemp);
+							if((int)userProMap.get("total") != 0 || loginUser.getUserId() == theProject.getUser().getUserId()){
+								sign.setUser(loginUser);
+								sign.setDate(new Date());
+								sign.setType(2);
+								sign = signService.add(sign);
+								if(sign.getSignId() != null) {
+									responseBean.setStatus(200);
+									responseBean.put("signId", sign.getSignId());
+								} else {
+									responseBean.put("error", "添加失败，系统错误");
+									responseBean.setStatus(500);
+								}
+							}else{
+								responseBean.setStatus(400);
+								responseBean.put("error", "您未参与该项目，无法签到");
+							}
+						}else{
+							responseBean.setStatus(401);
+							responseBean.put("error", "签到码错误");
 						}
 					}
 				}else{
@@ -322,6 +428,50 @@ public class SignAction extends ActionSupport implements ModelDriven<Sign>{
 			Map<String, Object> map = signService.deleteByIds(idsIntegers,loginUser);
 			responseBean.setStatus((int)map.get("code"));
 			responseBean.setObjMap((Map<String, Object>)map.get("result"));
+		}
+		try {
+			responseBean.writeTheMap();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	}
+	
+	public void isInProjectArea(){
+		ResponseBean responseBean = new ResponseBean();
+		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
+		if (loginUser == null) {
+			responseBean.setStatus(400);
+			responseBean.put("error", "您还未登录，无权进行本操作");
+		}else{			
+			Project theProject = projectService.getById(sign.getProject().getProjectId());
+			if(theProject == null){
+				responseBean.setStatus(400);
+				responseBean.put("error", "项目不存在");
+			}else{
+				UserPro userProTemp = new UserPro();
+				userProTemp.setProject(theProject);
+				userProTemp.setUser(loginUser);
+				Map<String, Object> userProMap = userProService.getByProjectAndUser("userProId", null, null, userProTemp);
+				if((int)userProMap.get("total") != 0 || loginUser.getUserId() == theProject.getUser().getUserId()){
+					if(sign.getLatitude() != null && sign.getLongitude() != null){
+						double theDistance = MapUtils.GetDistance(sign.getLatitude(), sign.getLongitude(), theProject.getLatitude(), theProject.getLongitude());
+						if(theDistance > theProject.getRadius() + 500 ){
+							responseBean.setStatus(200);
+							responseBean.put("result", false);
+						}else{
+							responseBean.setStatus(200);
+							responseBean.put("result", true);
+						}
+					}else{
+						responseBean.setStatus(200);
+						responseBean.put("result", false);
+					}
+				}else{
+					responseBean.setStatus(400);
+					responseBean.put("error", "您未参与该项目");
+				}
+			}
 		}
 		try {
 			responseBean.writeTheMap();
