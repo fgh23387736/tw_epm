@@ -23,9 +23,9 @@
 <body>
 	<div class="layui-fluid">
 
-	<form class="layui-form" id="edit_form" loadUrl="">
+	<form class="layui-form" id="edit_form" loadUrl="" >
 	<input type="hidden" name="ids" class="fsEdit fsAddReadonly"/>
-	<input type="hidden" name="keys" value="name+content+startDate+endDateA+endDateB" class="fsEdit fsAddReadonly"/>
+	<input type="hidden" name="keys" value="name+content+startDate+endDateA+endDateB+longitude+radius+latitude" class="fsEdit fsAddReadonly"/>
 	  <div class="layui-form-item">
 	    <label class="layui-form-label">名称</label>
 	    <div class="layui-input-block">
@@ -50,6 +50,23 @@
 	      <input type="text" name="endDateB"  lay-verify="" lay-verType="tips" autocomplete="off" class="layui-input fsDate" dateType="datetime" />
 	    </div>
 	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">中心经度</label>
+	    <div class="layui-input-inline">
+	      <input type="number" name="longitude"  id="longitude" lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" readonly />
+	    </div>
+	    <label class="layui-form-label">中心纬度</label>
+	    <div class="layui-input-inline">
+	      <input type="number" name="latitude"  id="latitude" lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" readonly />
+	    </div>
+	    <a class="layui-btn" id="chosePositionButton" function="openNewWindow" windowUrl="/tw_epm/end/admin/views/project/projects/chosePosition.html" windowWidth="800px" windowHeight="600px" windowTitle="选择坐标">选择坐标</a>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">工作半径</label>
+	    <div class="layui-input-inline">
+	      <input type="number" name="radius"  lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" min="10"/>
+	    </div>
+	  </div>
 	  <div class="layui-form-item layui-form-text">
 	    <label class="layui-form-label">描述</label>
 	    <div class="layui-input-block">
@@ -71,3 +88,24 @@
 	</div>
 </body>
 </html>
+<script type="text/javascript">
+	function setLaAndLo(longitude,latitude){
+		$("#longitude").val(longitude);
+		$("#latitude]").val(latitude);
+	}
+	layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], function(exports){
+	  	var layer = layui.layer,
+	  	fsCommon = layui.fsCommon;
+	  	var index = parent.layer.getFrameIndex(window.name);  
+	  	document.getElementById("chosePositionButton").onclick = function(){
+	  		var _this = $(this);
+	  		var windowUrl = _this.attr("windowUrl"),//请求url
+			windowWidth = _this.attr("windowWidth"),
+			windowHeight = _this.attr("windowHeight"),
+			windowTitle = _this.attr("windowTitle");
+			fsCommon.open(windowTitle,windowWidth,windowHeight,windowUrl+"?frameIndex="+index,function(){});
+	  } 
+	  
+	});
+
+</script>

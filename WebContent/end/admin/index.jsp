@@ -117,8 +117,7 @@
   		<!-- 菜单导航 -->
 		<ul class="layui-tab-title" id="fsTabMenu">
 			<li class="layui-this" lay-id="home"><i class="layui-icon">&#xe68e;</i><cite>首页</cite><p class="layui-tab-close" style="display: none;"></p></li>
-		</ul
-		
+		</ul>
 		<!-- 内容 -->
 		<div class="layui-tab-content">
 			<div class="layui-tab-item layui-show" lay-id="1">

@@ -197,6 +197,11 @@ layui.define(['layer','form','fsConfig'], function (exports) {
     		form.render(); //更新全部
     	}
     },
+    getUrlPra:function(name){
+			var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		  var r = window.location.search.substr(1).match(reg);
+		  if(r!=null)return  unescape(r[2]); return null;
+		},
     //弹出窗口
     open : function(_title,_width,_height,_url,_end,isMaximize){
     	if($.isEmpty(_width))
@@ -343,6 +348,15 @@ layui.define(['layer','form','fsConfig'], function (exports) {
 						//关闭
 		    		var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
 		    		parent.layer.close(index);
+					  break;
+					case "openNewWindow" :
+						//关闭
+
+		    			var windowUrl = _this.attr("windowUrl"),//请求url
+		    			windowWidth = _this.attr("windowWidth"),
+		    			windowHeight = _this.attr("windowHeight"),
+		    			windowTitle = _this.attr("windowTitle");
+		    			fsCommon.open(windowTitle,windowWidth,windowHeight,windowUrl,function(){});
 					  break;
 					case "query" :
 						//查询

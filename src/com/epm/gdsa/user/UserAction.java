@@ -218,7 +218,7 @@ public class UserAction extends ActionSupport implements ModelDriven<User>{
 			if(theuser != null){
 				if(PublicUtils.getMD5(user.getPassword()).equals(theuser.getPassword())){
 					response.setStatus(200);
-					response.put("success", "登陆成功");
+					response.put("userId", theuser.getUserId());
 					ServletActionContext.getRequest().getSession().setAttribute("user", theuser);
 				}else{
 					response.put("error", "密码错误");
