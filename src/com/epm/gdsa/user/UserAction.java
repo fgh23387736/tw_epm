@@ -285,6 +285,12 @@ public class UserAction extends ActionSupport implements ModelDriven<User>{
 
 	
 	public void getByNameAndLoginName(){	
+		if(user.getName() == null){
+			user.setName("");
+		}
+		if(user.getLoginName() == null){
+			user.setLoginName("");
+		}
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {
