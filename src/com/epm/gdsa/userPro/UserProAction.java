@@ -173,6 +173,9 @@ public class UserProAction extends ActionSupport implements ModelDriven<UserPro>
 	}
 	
 	public void getByProjectAndUserName(){
+		if(userName == null){
+			userName = "";
+		}
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {

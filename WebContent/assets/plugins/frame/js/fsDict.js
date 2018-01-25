@@ -53,5 +53,14 @@ layui.fsDict = {
 			inputs : "parentid:,area1:#area2222222",
 			labelField : "name",
 			valueField : "id"
+		},
+		//区
+		proRole : {
+			formatType : "server",
+			loadUrl : " /tw_epm/actions/proRole_getByProjectAndName.action",
+			inputs : "project:,keys:proRoleId+name",
+			labelField : "name",
+			valueField : "proRoleId",
+			dataField:"resultList"
 		}
 };

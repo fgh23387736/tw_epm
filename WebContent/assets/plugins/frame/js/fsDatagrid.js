@@ -544,6 +544,11 @@ layui.define(["fsCommon","table",'laypage','fsConfig','form',"element"], functio
           });
     		  parent.$("[menuid=projectHome]").click();
         break;
+        case "choseUser" :
+          var index = parent.layer.getFrameIndex(window.name);
+          parent.layer.getChildFrame('[name=user]', fsCommon.getUrlPra("frameIndex")).val(data.userId);
+          parent.layer.close(index);
+        break;
       	default:;
       }
     });

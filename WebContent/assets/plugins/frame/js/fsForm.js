@@ -201,6 +201,7 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
     	var funcNo = dictObj["loadFuncNo"];
     	var url = dictObj["loadUrl"];//请求url
     	var inputs = dictObj["inputs"];
+    	var dataField = dictObj["dataField"];
     	var param = {};//参数
     	if(!$.isEmpty(inputs))
     	{
@@ -227,10 +228,22 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
     	}
     	
     	if(!$.isEmpty(url) && (isLoad !="0" || b)){
+    		var urlParam = fsCommon.getUrlParam();
+    		var addParFromUrl = _this.attr("addParFromUrl");
+    		addParFromUrl = addParFromUrl.split(",");
+    		for (var i = 0; i < addParFromUrl.length; i++) {
+    			param[addParFromUrl[i]] = urlParam[addParFromUrl[i]];
+    			
+    		};
     		fsCommon.invoke(url,param,function(data){
     			if(data[statusName] == "0")
     			{
-    				var list = $.result(data,dataName);
+    				if(dataField != undefined){
+    					var list = data[dataField];
+    				}else{
+    					var list = $.result(data,dataName);
+    				}
+    				
     				thisForm.selectDataRender(_this,labelField,valueField,list);
     			}
     			else
@@ -282,7 +295,8 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
 		var urlParam = fsCommon.getUrlParam();
 		console.log(urlParam);
 		var formDom = $(thisForm.config.elem);
-		console.log(formDom.attr("addParFromUrl"));
+		
+		
 		//判断模式
 		var _mode = urlParam["_mode"];
 		if(!$.isEmpty(_mode)){
@@ -308,6 +322,7 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
 				formDom.find(".fsEdit").hide();
 				formDom.find("button.fsEdit").hide();
 				formDom.find("button:not(.fsEdit)").show();
+				formDom.find(".fsAdd").show();
 				//只读处理
 				formDom.find("input.fsAddReadonly").addClass("layui-disabled").attr("disabled","disabled");
 				formDom.find("select.fsAddReadonly,textarea.fsAddReadonly").attr("disabled","disabled");
@@ -317,6 +332,7 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
 				formDom.find(".fsEdit").show();
 				formDom.find("button.fsAdd").hide();
 				formDom.find("button:not(.fsAdd)").show();
+				formDom.find(".fsEdit").show();
 				//只读处理
 				formDom.find("input.fsEditReadonly").addClass("layui-disabled").attr("disabled","disabled");
 				formDom.find("select.fsEditReadonly,textarea.fsEditReadonly").attr("disabled","disabled");
@@ -341,7 +357,16 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
 				if(!$.isEmpty(_fsUuid)){
 					var formDataStr =$.getSessionStorage(_fsUuid);
 					if(!$.isEmpty(formDataStr)){
-						showData(JSON.parse(formDataStr));
+						var theDate = JSON.parse(formDataStr);
+						if(formDom.attr("addParFromUrl") != undefined){
+							var addParFromUrl = formDom.attr("addParFromUrl");
+							addParFromUrl = addParFromUrl.split(",");
+							for (var i = 0; i < addParFromUrl.length; i++) {
+								theDate[addParFromUrl[i]] = urlParam[addParFromUrl[i]];
+							};
+						}
+						
+						showData(theDate);
 					}
 				}else{
 					fsCommon.errorMsg("唯一标识获取失败!");
@@ -414,25 +439,27 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
 	FsForm.prototype.bindButtionSubmit = function(){
     var thisForm = this;
     $(thisForm.config.elem).find("button").each(function(){
-      var lay_filter = $(this).attr("lay-filter");
-      /**监听新增提交*/
-      form.on("submit("+lay_filter+")", function (data) {
-          
-        if("1" == $(this).attr("isVerifyPwd"))//是否验证密码
-        {
-          //弹出密码提示
-          layer.prompt({title: '输入验证密码，并确认', formType: 1}, function(pass, index){
-            layer.close(index);
-            data.field["loginPassword"] = pass;
-            thisForm.submitForm(data.field,$(this));
-          });
-        }
-        else
-        {
-          thisForm.submitForm(data.field,$(this));
-        }
-        return false;
-      });
+    	if($(this).attr("lay-submit") != undefined){
+    		var lay_filter = $(this).attr("lay-filter");
+		      /**监听新增提交*/
+		      form.on("submit("+lay_filter+")", function (data) {
+		        if("1" == $(this).attr("isVerifyPwd"))//是否验证密码
+		        {
+		          //弹出密码提示
+		          layer.prompt({title: '输入验证密码，并确认', formType: 1}, function(pass, index){
+		            layer.close(index);
+		            data.field["loginPassword"] = pass;
+		            thisForm.submitForm(data.field,$(this));
+		          });
+		        }
+		        else
+		        {
+		          thisForm.submitForm(data.field,$(this));
+		        }
+		        return false;
+		      });
+    	}
+      
     });
 	}
 	
@@ -462,13 +489,16 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
   		param[key] = layedit.getContent(val);
   	});
   	var urlParam = fsCommon.getUrlParam();
-  	var parKeyFromUrl = _this.attr("addParFromUrl").split(",");
-  	for (var i = 0; i < parKeyFromUrl.length; i++) {
-  		if(!$.isEmpty(urlParam[parKeyFromUrl[i]])){
-  			param[parKeyFromUrl[i]] = urlParam[parKeyFromUrl[i]];
-  		}
-  		
+  	if(_this.attr("addParFromUrl") != undefined){
+  		var parKeyFromUrl = _this.attr("addParFromUrl").split(",");
+	  	for (var i = 0; i < parKeyFromUrl.length; i++) {
+	  		if(!$.isEmpty(urlParam[parKeyFromUrl[i]])){
+	  			param[parKeyFromUrl[i]] = urlParam[parKeyFromUrl[i]];
+	  		}
+	  		
+	  	}
   	}
+  	
   	
   	fsCommon.invoke(url,param,function(data)
 		{
