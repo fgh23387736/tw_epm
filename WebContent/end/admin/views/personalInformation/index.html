@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta content="text/html;charset=UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta http-equiv ="Pragma" content = "no-cache"/>
+	<meta http-equiv="Cache-Control" content="no cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="format-detection" content="telephone=no"/>
+	<script src="https://cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+	<link href="https://cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/tw_epm/assets/plugins/layui/css/layui.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/tw_epm/assets/css/fs.css" media="all"/>
+	<script type="text/javascript" src="/tw_epm/assets/plugins/layui/layui.js"></script>
+	<script type="text/javascript" src="/tw_epm/assets/plugins/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/tw_epm/assets/plugins/md5.js"></script>
+	
+</head>
+<body>
+   	<div class="layui-fluid">
+	  	<div class="layui-row layui-col-space1">
+		  	<div class="layui-col-md12">
+				<div class="layui-tab layui-tab-card">
+					 <ul class="layui-tab-title">
+					    <li class="layui-this">个人资料</li>
+					    <li>账户信息</li>
+					 </ul>
+					 <div class="layui-tab-content" style="">
+					    <div class="layui-tab-item layui-show">
+					    	<form class="layui-form" action="">
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">姓名</label>
+							        <div class="layui-input-block">
+							            <input type="text" name="name" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input"></div>
+							    </div>
+								<div class="layui-form-item">
+							        <label class="layui-form-label">电话</label>
+							        <div class="layui-input-block">
+							            <input type="text" name="tel"  lay-verify="phone" placeholder="请输入电话" autocomplete="off" class="layui-input">
+							        </div>
+							    </div>
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">email</label>
+							        <div class="layui-input-block">
+							            <input type="text" name="email"  lay-verify="email" placeholder="请输入email" autocomplete="off" class="layui-input">
+							        </div>
+							    </div>
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">微信</label>
+							        <div class="layui-input-block">
+							            <input type="text" name="wechat"   placeholder="请输入微信" autocomplete="off" class="layui-input">
+							        </div>
+							    </div>
+							    <div class="layui-form-item">
+							        <div class="layui-input-block">
+							            <button class="layui-btn" lay-submit lay-filter="userBaseInformation">立即提交</button>
+							            <button type="reset" class="layui-btn layui-btn-primary">重置</button></div>
+							    </div>
+							</form>
+					    </div>
+					    <div class="layui-tab-item">
+					    	<form class="layui-form" action="">
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">原密码</label>
+							        <div class="layui-input-inline">
+							            <input type="text" name="username" readonly required lay-verify="required"  placeholder="账号" autocomplete="off" class="layui-input">
+							        </div>
+							    </div>
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">原密码</label>
+							        <div class="layui-input-inline">
+							            <input type="password" name="password" required lay-verify="password"  placeholder="原密码" autocomplete="off" class="layui-input">
+							        </div>
+							    </div>
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">新密码</label>
+							        <div class="layui-input-inline">
+							            <input type="password" name="newPassword" required lay-verify="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+							        </div>
+							        <div class="layui-form-mid layui-word-aux">8-20位</div>
+							    </div>
+							    <div class="layui-form-item">
+							        <label class="layui-form-label">重复新密码</label>
+							        <div class="layui-input-inline">
+							            <input type="password" name="reNewPassword" required lay-verify="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+							        </div>
+							        <div class="layui-form-mid layui-word-aux">8-20位</div>
+							    </div>
+							    <div class="layui-form-item">
+							        <div class="layui-input-block">
+							            <button class="layui-btn" lay-submit lay-filter="changePassword">立即提交</button>
+							            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							        </div>
+							    </div>
+							</form>
+					    </div>
+					 </div>
+				</div>
+
+		  	</div>
+	  	</div>
+	</div>
+</body>
+<script>
+//Demo
+layui.use(['form', 'element'],
+function() {
+    var form = layui.form;
+    var element = layui.element;
+    layer.load(2);
+    $.ajax({
+        url: '/tw_epm/actions/user_getByIds.action',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            keys:'loginName+name+userId+tel+email+wechat',
+            ids:""
+        },
+        success: function(data) {
+            $('[name=name]').attr('value', data.resultList[0].name);
+            $('[name=username]').attr('value', data.resultList[0].loginName);
+            $('[name=tel]').attr('value', data.resultList[0].tel);
+            $('[name=wechat]').attr('value', data.resultList[0].wechat);
+            $('[name=email]').attr('value', data.resultList[0].email);
+            layer.closeAll('loading');
+
+        },
+        error: function(data) {
+            layer.closeAll('loading');
+             layer.msg(JSON.parse(data.responseText).error, {
+                icon: 5
+            });
+        }
+    });
+
+    form.on('submit(changePassword)',
+    function(data) {
+    	console.log("检测到了")
+    	data = data.field;
+        if(data.reNewPassword != data.newPassword){
+        	layer.msg("两次密码不一致",{icon:5});
+        }else{
+        	layer.load(2);
+	        $.ajax({
+	            url: '/tw_epm/actions/user_changePassword.action',
+	            type: 'POST',
+	            dataType: 'json',
+	            data: {
+	                password:hex_md5(data.password),
+	                newPassword:hex_md5(data.newPassword),
+	                rePassword:hex_md5(data.reNewPassword)
+	                
+	            },
+	            success: function(data) {
+	                layer.closeAll('loading');
+	                layer.alert('密码修改成功', {
+	                   icon: 6
+	                  ,closeBtn: 0
+	                }, function(){
+	                    parent.window.location='/tw_epm/end/login/login.jsp';
+	                });
+	                
+	            },
+	            error: function(data) {
+	                layer.closeAll('loading');
+	                layer.msg(JSON.parse(data.responseText).error, {
+	                    icon: 5
+	                });
+	            }
+	        });
+        }
+        return false;
+    });
+
+    //监听提交
+    form.on('submit(userBaseInformation)',
+    function(data) {
+        console.log(data);
+        data = data.field;
+        layer.load(2);
+	    $.ajax({
+	        url: '/tw_epm/actions/user_updateByIds.action',
+	        type: 'POST',
+	        dataType: 'json',
+	        data: {
+	        	ids:"",
+	        	keys:"name+tel+email+wechat",
+	            name:data.name,
+	            tel:data.tel,
+	            email:data.email,
+	            wechat:data.wechat
+	        },
+	        success: function(data) {
+	            layer.closeAll('loading');
+	            layer.alert('修改成功', {
+	               icon: 6
+	              ,closeBtn: 0
+	            }, function(){
+	              parent.location.reload();
+	            });
+	            
+	        },
+	        error: function(data) {
+	            layer.closeAll('loading');
+	             layer.msg(JSON.parse(data.responseText).error, {
+	                icon: 5
+	            });
+	        }
+	    });
+        return false;
+    });
+    
+    form.verify({
+        username: function(value, item) { //value：表单的值、item：表单的DOM对象
+            if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                return '用户名不能有特殊字符';
+            }
+            if (/(^\_)|(\__)|(\_+$)/.test(value)) {
+                return '用户名首尾不能出现下划线\'_\'';
+            }
+            if (/^\d+\d+\d$/.test(value)) {
+                return '用户名不能全为数字';
+            }
+        }
+
+        //我们既支持上述函数式的方式，也支持下述数组的形式
+        //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+        ,
+        password: [/^[\S]{8,20}$/, '密码必须8到20位，且不能出现空格']
+    });
+});
+</script>
+</html>
