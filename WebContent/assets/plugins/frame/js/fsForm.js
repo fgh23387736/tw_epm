@@ -280,9 +280,9 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
     var thisForm = this;
 		//参数处理，如果有参数，自动填充form表单
 		var urlParam = fsCommon.getUrlParam();
-		
+		console.log(urlParam);
 		var formDom = $(thisForm.config.elem);
-		
+		console.log(formDom.attr("addParFromUrl"));
 		//判断模式
 		var _mode = urlParam["_mode"];
 		if(!$.isEmpty(_mode)){
@@ -461,7 +461,14 @@ layui.define(['layer',"fsCommon","form",'laydate',"fsConfig",'layedit'], functio
   	$.each(layEdits, function(key, val) {
   		param[key] = layedit.getContent(val);
   	});
-  	
+  	var urlParam = fsCommon.getUrlParam();
+  	var parKeyFromUrl = _this.attr("addParFromUrl").split(",");
+  	for (var i = 0; i < parKeyFromUrl.length; i++) {
+  		if(!$.isEmpty(urlParam[parKeyFromUrl[i]])){
+  			param[parKeyFromUrl[i]] = urlParam[parKeyFromUrl[i]];
+  		}
+  		
+  	}
   	
   	fsCommon.invoke(url,param,function(data)
 		{

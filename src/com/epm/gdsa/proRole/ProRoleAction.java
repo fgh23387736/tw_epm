@@ -144,6 +144,9 @@ public class ProRoleAction extends ActionSupport implements ModelDriven<ProRole>
 	}
 	
 	public void getByProjectAndName(){
+		if(proRole.getName() == null){
+			proRole.setName("");
+		}
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {

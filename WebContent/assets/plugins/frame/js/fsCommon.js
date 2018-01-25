@@ -420,6 +420,23 @@ layui.define(['layer','form','fsConfig'], function (exports) {
 		  				}
 		        	_url += "_mode="+_mode;
 		        }
+
+		        var addParFromUrl= _this.attr("addParFromUrl");
+		        if(!$.isEmpty(addParFromUrl)){
+		        	addParFromUrl = addParFromUrl.split(",");
+		        	var urlPar = fsCommon.getUrlParam();
+		        	for (var i = 0; i < addParFromUrl.length; i++) {
+		        		;
+		        		if(_url.indexOf('?') == -1)
+		  				{
+		  					_url +="?";
+		  				}else{
+		  					_url +="&";
+		  				}
+		        		_url += addParFromUrl[i]+"="+urlPar[addParFromUrl[i]];
+		        	}
+
+		        }
 		    		
 		    		var _title = _this.attr("topTitle");
 		    		var _width = _this.attr("topWidth");

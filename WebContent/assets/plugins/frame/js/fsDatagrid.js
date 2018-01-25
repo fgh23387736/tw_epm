@@ -141,6 +141,7 @@ layui.define(["fsCommon","table",'laypage','fsConfig','form',"element"], functio
 	  
 	  thisDatagrid.formatDataQuery(datagridCols["formatArr"]);
 	  var theParm = fsCommon.getParameterListFromUrl();
+    console.log(theParm);
     for(var i in theParm){//用javascript的for/in循环遍历对象的属性 
       formData[i] = theParm[i];
     } 
@@ -437,15 +438,18 @@ layui.define(["fsCommon","table",'laypage','fsConfig','form',"element"], functio
           
           //弹出的方式
           var _mode = _this.attr("topMode");
-          if(!$.isEmpty(_mode)){
-          	if(_url.indexOf('?') == -1)
-    				{
-    					_url +="?";
-    				}else{
-    					_url +="&";
-    				}
-          	_url += "_mode="+_mode;
+          if(_mode != "new"){
+            if(!$.isEmpty(_mode)){
+              if(_url.indexOf('?') == -1)
+              {
+                _url +="?";
+              }else{
+                _url +="&";
+              }
+              _url += "_mode="+_mode;
+            }
           }
+          
           var _title = _this.attr("topTitle");
           var _width = _this.attr("topWidth");
           var _height = _this.attr("topHeight");
@@ -529,11 +533,15 @@ layui.define(["fsCommon","table",'laypage','fsConfig','form',"element"], functio
           }
         	parent.$("[menuid=2]").click();
           parent.$("[datapid=2][menuid!=2]>a").attr("dataurl",function(){
+            var layId = $(this).attr("dataurl");
             var url = $(this).attr("dataurl");
-            url = changeURLPar(url,"projectId",_url);
+            url = changeURLPar(url,"project",_url);
             return url;
           });
-          parent.layui.element.tabDelete("fsTab", "projectHome");
+          parent.$("[datapid=2][menuid!=2]").each(function(){
+            var layId = $(this).attr("lay-id");
+            parent.layui.element.tabDelete("fsTab", layId);
+          });
     		  parent.$("[menuid=projectHome]").click();
         break;
       	default:;
