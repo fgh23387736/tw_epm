@@ -88,7 +88,7 @@ function submitTest() {
                 icon: 6
             });
             layer.closeAll('loading');
-            window.location="/tw_epm/end/admin/index/index.jsp";
+            window.location="/tw_epm/end/admin/index.jsp";
         },
         error: function(data) {
             layer.closeAll('loading');

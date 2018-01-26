@@ -1,9 +1,3 @@
 eclipse.preferences.version=1
-encoding//WebContent/end/admin/index/index.jsp=UTF-8
-encoding//WebContent/end/admin/leftSidebar.jsp=UTF-8
-encoding//WebContent/end/admin/navbar.jsp=UTF-8
-encoding//WebContent/end/admin/personalInformation/personalInformation.js=UTF-8
-encoding//WebContent/end/admin/project/projects/projects.jsp=UTF-8
-encoding//WebContent/end/footer.jsp=UTF-8
 encoding//WebContent/end/login/login.jsp=UTF-8
 encoding//src/com/epm/utils/HibernateUtils.java=UTF-8
