@@ -29,7 +29,6 @@
 <form class="layui-form" id="query_form">
 	<div class="layui-form-item">
 		<input type="hidden" name="keys" autocomplete="off" class="layui-input" value=""/>
-		<input type="hidden" name="user" autocomplete="off" class="layui-input" value="0"/>
 		<div class="layui-inline">
 			<label class="layui-form-mid">名称：</label>
 			<div class="layui-input-inline" style="width: 100px;">
@@ -48,30 +47,41 @@
   	 <div class="layui-col-md12">
   	 	<div class="layui-row grid-demo">
 	      <div class="layui-col-md3">
+        	<button class="layui-btn" function="top" topUrl="/tw_epm/end/admin/views/project/project/point/one.html" topMode="add" topWidth="700px" topHeight="500px" topTitle="新增" addParFromUrl="project">
+			  <i class="layui-icon">&#xe654;</i>新增
+			</button>
+			<button class="layui-btn layui-btn-danger" function="submit" url="/tw_epm/actions/userPro_deleteByIds.action" isMutiDml="1" isConfirm="1" confirmMsg="是否确定删除选中的数据？" inputs="ids:$userProId">
+			  <i class="layui-icon">&#xe640;</i>删除
+			</button>
 			<button class="layui-btn" function="refresh">
 			  <i class="layui-icon">&#x1002;</i>刷新
 			</button>
 	      </div>
 	      <div class="layui-col-md12">
-	         <table id="fsDatagrid" lay-filter="fsDatagrid" class="fsDatagrid" isLoad="1" url="/tw_epm/actions/project_getByJoinUserAndName.action" isPage="1" defaultForm="query_form" height="full-130"></table>
+	         <table id="fsDatagrid" lay-filter="fsDatagrid" class="fsDatagrid" isLoad="1" url="/tw_epm/actions/point_getByProjectAndName.action" isPage="1" defaultForm="query_form" height="full-130"></table>
 
 	         <div class="fsDatagridCols">
 	         	<p type="numbers" title="#"/>
 				<p checkbox="true"/>
-			    <p field="projectId" title="ID" width="100" sort="true"/>
+			    <p field="pointId" title="ID" width="100" sort="true"/>
 			    <p field="name" title="名称" width="30%" sort="true" />
-			    <p field="startDate" title="开始时间" width="150"/>
-			    <p field="endDateA" title="预计结束时间" width="150" />
-			    <p field="endDateB" title="实际结束时间" width="150" />
-			    <p field="user" title="创建人姓名" width="100" templet="#userTpl"/>
-			    <p fixed="right" align="center" toolbar="#barDemo" title="操作" width="80"/>
+			    <p field="state" title="项目进度" width="200" sort="true" templet="#stateTpl"/>
+			    <p field="date" title="日期" width="300" />
+			    <p field="user" title="上传者名称(编号)" width="300" templet="#userTpl"/>
+			    <p field="describe" title="问题" width="300" />
+			    <p fixed="right" align="center" toolbar="#barDemo" title="操作" width="180"/>
 			</div>
 		
 			<script type="text/html" id="userTpl">
-				{{ d.user.name+"("+d.user.userId+")" }}
+				{{ d.user.name+'('+d.user.userId+')' }}
+			</script>
+			<script type="text/html" id="stateTpl">
+				{{ d.state + "%" }}
 			</script>
 			<script type="text/html" id="barDemo">
-				<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="showProject" topUrl="/tw_epm/end/admin/views/project/projects/one.html" topMode="readonly" topWidth="800px" topHeight="600px" topTitle="查看demo" inputs="projectId:">管理</a>
+				<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="top" topUrl="/tw_epm/end/admin/views/project/project/point/problem.html" topMode="new" topWidth="700px" topHeight="500px" topTitle="问题列表" inputs="pointId:">问题列表</a>
+ 				<a class="layui-btn layui-btn-xs" lay-event="top" topUrl="/tw_epm/end/admin/views/project/project/point/one.html{{'?project='+d.project.projectId+'&'}}" topMode="edit" topWidth="700px" topHeight="500px" topTitle="编辑" inputs="ids:$pointId">编辑</a>
+  				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="submit" url="/tw_epm/actions/point_deleteByIds.action" isConfirm="1" confirmMsg="是否确定删除当前记录？" inputs="ids:$pointId" >删除</a>
 			</script>
 	      </div>
 	    </div>

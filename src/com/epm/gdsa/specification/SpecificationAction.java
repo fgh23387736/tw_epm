@@ -205,6 +205,9 @@ public class SpecificationAction extends ActionSupport implements ModelDriven<Sp
 	}
 	
 	public void getByProjectAndName(){
+		if(specification.getName() == null){
+			specification.setName("");
+		}
 		ResponseBean responseBean = new ResponseBean();
 		User user2 = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (user2 == null) {

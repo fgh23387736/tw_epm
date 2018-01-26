@@ -67,7 +67,7 @@ public class LearnDocService {
 				return learnDoc.getLearnDocId();
 			case "content":
 				return learnDoc.getContentUrl();
-			case "typw":
+			case "type":
 				return learnDoc.getType();
 			case "name":
 				return learnDoc.getName();

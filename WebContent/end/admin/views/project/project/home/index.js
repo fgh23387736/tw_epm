@@ -36,7 +36,7 @@ layui.use(["layer","element","fsCommon"],function(){
                     for (var i = 0; i < points.length; i++) {
                         var thePercent = points[i].state+"%";
                         $("#pointListForPercentBar").append(
-                                '<div class="pointForPercentBar" style="left:'+thePercent+';" title="'+points[i].name+'" onclick="window.location=\'/tw_epm/end/admin/project/point/point.jsp?id='+points[i].pointId+'\'">'
+                                '<div class="pointForPercentBar" style="left:'+thePercent+';" title="'+points[i].name+'" >'
                                 +thePercent
                                 +'</div>'
                             );

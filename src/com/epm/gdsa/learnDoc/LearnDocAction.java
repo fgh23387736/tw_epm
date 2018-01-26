@@ -205,6 +205,9 @@ public class LearnDocAction extends ActionSupport implements ModelDriven<LearnDo
 	}
 	
 	public void getByProjectAndName(){
+		if(learnDoc.getName() == null){
+			learnDoc.setName("");
+		}
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {

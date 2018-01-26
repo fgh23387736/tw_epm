@@ -496,6 +496,9 @@ layui.define(['laytpl', 'laypage', 'layer', 'form','fsConfig'], function(exports
           typeof options.done === 'function' && options.done(res, curr, $.result(res,response.countName));
         }
         ,error: function(e, m){
+          if(e.responseJSON.error != undefined){
+            layer.msg(e.responseJSON.error,{icon:5});
+          }
           that.layMain.html('<div class="'+ NONE +'">数据接口请求异常</div>');
           that.renderForm();
           loadIndex && layer.close(loadIndex);

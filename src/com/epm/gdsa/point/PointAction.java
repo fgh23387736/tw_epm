@@ -151,6 +151,9 @@ public class PointAction extends ActionSupport implements ModelDriven<Point>{
 	}
 	
 	public void getByProjectAndName(){
+		if(point.getName() == null){
+			point.setName("");
+		}
 		ResponseBean responseBean = new ResponseBean();
 		User loginUser = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
 		if (loginUser == null) {

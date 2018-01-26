@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
 	<meta content="text/html;charset=UTF-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 	<meta http-equiv ="Pragma" content = "no-cache"/>
@@ -14,41 +13,51 @@
 	<script src="https://cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
 	<link href="https://cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="/tw_epm/assets/plugins/layui/css/layui.css" media="all"/>
-	<link rel="stylesheet" type="text/css" href="/tw_epm/assets/plugins/layui/css/admin.css" media="all"/>
 	<link rel="stylesheet" type="text/css" href="/tw_epm/assets/css/fs.css" media="all"/>
-	<script type="text/javascript" src="/tw_epm/assets/plugins/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="/tw_epm/assets/plugins/layui/layui.js"></script>
-	<script type="text/javascript" src="/tw_epm/assets/plugins/echarts/echarts.min.js"></script>
+	<script type="text/javascript" src="/tw_epm/assets/plugins/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="/tw_epm/assets/plugins/frame/js/fs.js?v=1.5.0"></script>
-	<link rel="stylesheet" type="text/css" href="index.css">
+	<link rel="stylesheet" type="text/css" href="problem.css">
 </head>
 <body>
-<div class="layui-fluid">  
-	<div class="layui-row layui-col-space10">
-		<div class="layui-col-md6 layui-col-space5">
-			<blockquote class="layui-elem-quote">
-				项目进度
-			</blockquote>
-            <div id="" style="width: 100%;height:200px;">
-				<div class="layui-progress layui-progress-big"  lay-filter="demo">
-				  	<div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+	<div class="layui-fluid">
+		<div class="panel-body" style="display: block;" id="pointProblems">
+			<div class="pointProblemDiv">
+				<div class="name">
+					这是提问者姓名
 				</div>
-				<div id="pointListForPercentBar">
-					<!-- <div class="pointForPercentBar">
-						100%
-					</div> -->
+				<div class="content">
+					这是问题
+				</div>
+				<div class="time">
+					2017-01-11 下午 1:02<span>[回复]</span>
+				</div>
+				<div class="answerList">
+					<div class="answer">
+						<div class="name">
+							这是回复者姓名
+						</div>
+						<div class="content">
+							这是回答
+						</div>
+						<div class="time">
+							2017-01-11 下午 1:02
+						</div>
+					</div>
+					
 				</div>
 			</div>
 		</div>
-		<div class="layui-col-md6 layui-col-space5">
-			<blockquote class="layui-elem-quote">
-				项目数据
-			</blockquote>
-			<div id="main" style="width: 100%;height:400px;">
-				
-			</div>
 	</div>
-</div>
-<script type="text/javascript" src="index.js"></script>
+
+
+	<div id="answerBox">
+		 <div class="layui-form-item layui-form-text">
+		    <div class="layui-input-block" style="margin:0px;">
+		      <textarea name="desc" placeholder="请输入内容" class="layui-textarea" id="answerBoxAnswer" style="width:100%;"></textarea>
+		    </div>
+		  </div>
+	</div>
 </body>
 </html>
+<script type="text/javascript" src="problem.js"></script>
