@@ -121,7 +121,12 @@ public class AdminPublicAction extends ActionSupport{
 			BufferedReader reader = null;
 			String laststr = "";
 			try{
-				String path = ServletActionContext.getServletContext().getRealPath("end/admin/menu.json");
+				String path;
+				if(loginUser.getType() == 2){
+					path = ServletActionContext.getServletContext().getRealPath("end/admin/menu.json");
+				}else{
+					path = ServletActionContext.getServletContext().getRealPath("end/admin/menuUser.json");
+				}
 				FileInputStream fileInputStream = new FileInputStream(path);
 				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
 				reader = new BufferedReader(inputStreamReader);
