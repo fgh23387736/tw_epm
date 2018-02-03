@@ -23,6 +23,7 @@
 		<action name="proRoleAuth_*" class="proRoleAuthAction" method="{1}"></action>
 		<action name="adminPublic_*" class="adminPublicAction" method="{1}"></action>
 		<action name="learnDoc_*" class="learnDocAction" method="{1}"></action>
+		<action name="material_*" class="materialAction" method="{1}"></action>
 	</package>
 	
 	<constant name="struts.custom.i18n.resources" value="Mess"></constant>

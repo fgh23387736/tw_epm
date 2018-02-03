@@ -207,6 +207,7 @@ public class MaterialAction extends ActionSupport implements ModelDriven<Materia
 			responseBean.setStatus(401);
 			responseBean.put("error", "您还未登录，无权进行本操作");
 		}else{
+			System.out.println(material.getProject());
 			Project theProject = projectService.getById(material.getProject().getProjectId());
 			if(theProject == null){
 				responseBean.setStatus(404);
